@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+
+<GridPane alignment="center" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="gui.GrammarInputController">
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+   </rowConstraints>
+   <children>
+      <AnchorPane prefHeight="553.0" prefWidth="685.0">
+         <children>
+            <ComboBox fx:id="parser" layoutX="493.0" layoutY="29.0" prefHeight="25.0" prefWidth="111.0" promptText="Parser" />
+            <Label layoutX="71.0" layoutY="81.0" text="consider the following points before entering the grammar :" textFill="#ff0d00">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="103.0" layoutY="166.0" text="-non of the variables should not be named S'" />
+            <Label layoutX="103.0" layoutY="246.0" text="-for using epsilon just write epsilon" />
+            <Label layoutX="102.0" layoutY="219.0" text="-for using or in the right side use | symbole" />
+            <Label layoutX="102.0" layoutY="115.0" text="-all of symboles and words should be seperated by space" />
+            <Label layoutX="102.0" layoutY="192.0" text="-use the symbole -&gt; for the seperator between right side and left side" />
+            <TextArea fx:id="input" layoutX="71.0" layoutY="277.0" prefHeight="200.0" prefWidth="533.0" promptText="something like this:  S -&gt; A A      A -&gt; a A | b (each one on a seperate line)" />
+            <Label layoutX="102.0" layoutY="139.0" text="-a line can at most 1 variable in the left side" />
+            <Button layoutX="71.0" layoutY="500.0" mnemonicParsing="false" onAction="#handleStart" text="Start" />
+            <Label fx:id="error" layoutX="167.0" layoutY="505.0" text="error" textFill="RED" />
+         </children>
+      </AnchorPane>
+   </children>
+</GridPane>
