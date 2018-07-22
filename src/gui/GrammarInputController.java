@@ -56,7 +56,7 @@ public class GrammarInputController implements Initializable{
                 }
             }else {
                 lr1Parser = new LR1Parser(grammar);
-                if(parser.getValue().equals("CLR(1_")){
+                if(parser.getValue().equals("CLR(1)")){
                     canBeParse = lr1Parser.parseCLR1();
                 }else {
                     canBeParse = lr1Parser.parseLALR1();

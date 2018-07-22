@@ -6,9 +6,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class OutputController implements Initializable {
@@ -94,7 +97,38 @@ public class OutputController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        output.setFont(Font.font("System"));
+        result.setVisible(false);
+        input.textProperty().addListener((observable, oldValue, newValue) -> {
+            String str = input.getText();
+            ArrayList<String> words = new ArrayList<>();
+            String[] split = str.trim().split("\\s+");
+            for(String s: split){
+                words.add(s);
+            }
+            if(GrammarInputController.parserKind.equals("LR(0)") || GrammarInputController.parserKind.equals("SLR(1)")){
+                boolean accept = GrammarInputController.lr0Parser.accept(words);
+                if(accept){
+                    result.setText("accepted");
+                    result.setTextFill(Color.GREEN);
+                    result.setVisible(true);
+                }else {
+                    result.setText("not accepted");
+                    result.setTextFill(Color.RED);
+                    result.setVisible(true);
+                }
+            }else{
+                boolean accept = GrammarInputController.lr1Parser.accept(words);
+                if(accept){
+                    result.setText("accepted");
+                    result.setTextFill(Color.GREEN);
+                    result.setVisible(true);
+                }else {
+                    result.setText("not accepted");
+                    result.setTextFill(Color.RED);
+                    result.setVisible(true);
+                }
+            }
+        });
         if(GrammarInputController.parserKind.equals("LR(0)") || GrammarInputController.parserKind.equals("SLR(1)")){
             output.setText(GrammarInputController.lr0Parser.getGrammar()+"");
         }else{

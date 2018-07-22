@@ -9,8 +9,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 
-
-<GridPane alignment="center" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="gui.GrammarInputController">
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.GrammarInputController">
    <columnConstraints>
       <ColumnConstraints />
    </columnConstraints>
@@ -18,7 +17,7 @@
       <RowConstraints />
    </rowConstraints>
    <children>
-      <AnchorPane prefHeight="553.0" prefWidth="685.0">
+      <AnchorPane prefHeight="553.0" prefWidth="685.0" style="-fx-background-color: &quot;ffffff&quot;;">
          <children>
             <ComboBox fx:id="parser" layoutX="493.0" layoutY="29.0" prefHeight="25.0" prefWidth="111.0" promptText="Parser" />
             <Label layoutX="71.0" layoutY="81.0" text="consider the following points before entering the grammar :" textFill="#ff0d00">
