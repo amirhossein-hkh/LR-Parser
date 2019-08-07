@@ -6,5 +6,5 @@ I implemented these parser algorithms using java and add gui for using it more c
 here is a screenshot from the application:
 
 
-![LR Parser](http://i67.tinypic.com/2ajopqh.png)
+![LR Parser](demo.png)
 
