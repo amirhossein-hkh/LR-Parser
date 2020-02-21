@@ -38,7 +38,12 @@ public class LR1State {
                     }
                     HashSet<Rule> rules = grammar.getRuledByLeftVariable(item.getCurrent());
                     for(Rule rule : rules){
-                        temp.add(new LR1Item(rule.getLeftSide(),rule.getRightSide(),0,lookahead));
+                        String[] rhs = rule.getRightSide();
+                        int finished = 0;
+                        if (rhs.length == 1 && rhs[0].equals("epsilon")) {
+                            finished = 1;
+                        }
+                        temp.add(new LR1Item(rule.getLeftSide(),rhs,finished,lookahead));
                     }
                 }
             }

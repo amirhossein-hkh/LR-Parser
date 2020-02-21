@@ -31,7 +31,9 @@ public class Grammar {
             for (String rule : rulesRightSide) {
                 String[] rightSide = rule.trim().split("\\s+");
                 for (String terminal : rightSide) {
-                    terminals.add(terminal);
+                    if (!terminal.equals("epsilon")) {
+                        terminals.add(terminal);
+                    }
                 }
 
                 if (line == 0) {
@@ -123,18 +125,19 @@ public class Grammar {
                 for (Rule rule : rules) {
                     for (int i = 0; i < rule.getRightSide().length; i++) {
                         if (rule.getRightSide()[i].equals(variable)) {
+                            HashSet<String> first;
                             if (i == rule.getRightSide().length - 1) {
-                                fallowSets.get(variable).addAll(fallowSets.get(rule.leftSide));
+                                first = fallowSets.get(rule.leftSide);
                             } else {
-                                HashSet<String> first = computeFirst(rule.getRightSide(), i + 1);
+                                first = computeFirst(rule.getRightSide(), i + 1);
                                 if (first.contains("epsilon")) {
                                     first.remove("epsilon");
                                     first.addAll(fallowSets.get(rule.leftSide));
                                 }
-                                if (!fallowSets.get(variable).containsAll(first)) {
-                                    isChange = true;
-                                    fallowSets.get(variable).addAll(first);
-                                }
+                            }
+                            if (!fallowSets.get(variable).containsAll(first)) {
+                                isChange = true;
+                                fallowSets.get(variable).addAll(first);
                             }
                         }
                     }
@@ -151,7 +154,7 @@ public class Grammar {
         if (index == string.length) {
             return first;
         }
-        if (terminals.contains(string[index])) {
+        if (terminals.contains(string[index]) || string[index].equals("epsilon")) {
             first.add(string[index]);
             return first;
         }
@@ -164,8 +167,8 @@ public class Grammar {
 
         if (first.contains("epsilon")) {
             if (index != string.length - 1) {
-                first.addAll(computeFirst(string, index + 1));
                 first.remove("epsilon");
+                first.addAll(computeFirst(string, index + 1));
             }
         }
         return first;

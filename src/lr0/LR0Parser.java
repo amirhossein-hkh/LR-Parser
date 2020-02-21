@@ -141,7 +141,7 @@ public class LR0Parser extends LRParser {
         for (int i = 0; i < canonicalCollection.size(); i++) {
             for (LR0Item item : canonicalCollection.get(i).getItems()) {
                 if (item.getDotPointer() == item.getRightSide().length) {
-                    if (item.getLeftSide().equals("s'")) {
+                    if (item.getLeftSide().equals("S'")) {
                         actionTable[i].put("$", new Action(ActionType.ACCEPT, 0));
                     } else {
                         HashSet<String> terminals = grammar.getTerminals();
