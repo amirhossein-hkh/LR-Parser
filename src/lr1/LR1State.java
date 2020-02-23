@@ -22,7 +22,6 @@ public class LR1State {
         boolean changeFlag = false;
         do {
             changeFlag = false;
-            HashSet<LR1Item> temp = new HashSet<>();
             for(LR1Item item : items){
                 if(item.getDotPointer() != item.getRightSide().length && grammar.isVariable(item.getCurrent())){
                     HashSet<String> lookahead = new HashSet<>();
@@ -43,13 +42,34 @@ public class LR1State {
                         if (rhs.length == 1 && rhs[0].equals("epsilon")) {
                             finished = 1;
                         }
-                        temp.add(new LR1Item(rule.getLeftSide(),rhs,finished,lookahead));
+                        HashSet<String> newLA = new HashSet<String>(lookahead);
+                        LR1Item newItem = new LR1Item(rule.getLeftSide(),rhs,finished,newLA);
+                        // merge lookaheads with existing item
+                        boolean found = false;
+                        for (LR1Item existingItem : items) {
+                            if (newItem.equalLR0(existingItem)) {
+                                HashSet<String> existLA = existingItem.getLookahead();
+                                if (!existLA.containsAll(newLA)) {
+                                    // changing the lookahead will change the hash code
+                                    // of the item, which means it must be re-added.
+                                    items.remove(existingItem);
+                                    existLA.addAll(newLA);
+                                    items.add(existingItem);
+                                    changeFlag = true;
+                                }
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            items.add(newItem);
+                            changeFlag = true;
+                        }
+                    }
+                    if (changeFlag) {
+                        break;
                     }
                 }
-            }
-            if(!items.containsAll(temp)){
-                items.addAll(temp);
-                changeFlag = true;
             }
         } while (changeFlag);
 
