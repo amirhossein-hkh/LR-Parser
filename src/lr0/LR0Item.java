@@ -11,7 +11,11 @@ public class LR0Item extends Rule {
 
     public LR0Item(Rule r) {
         super(r.getLeftSide(), r.getRightSide());
-        this.dotPointer = 0;
+        int finished = 0;
+        if (r.getRightSide().length == 1 && r.getRightSide()[0].equals("epsilon")) {
+            finished = 1;
+        }
+        this.dotPointer = finished;
     }
 
     public LR0Item(String leftSide, String[] rightSide, int dotPointer) {
