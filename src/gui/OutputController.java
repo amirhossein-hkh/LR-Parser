@@ -1,138 +1,100 @@
 package gui;
 
+import static gui.InputController.lrParser;
+import static javafx.fxml.FXMLLoader.load;
+import static javafx.scene.paint.Color.GREEN;
+import static javafx.scene.paint.Color.RED;
+import static util.Utility.list;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.text.Font;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
+import javafx.stage.Stage;
 
 public class OutputController implements Initializable {
 
-    @FXML
-    private TextField input;
+	@FXML private TextField input;
+	@FXML private TextArea output;
+	@FXML private Label result;
 
-    @FXML
-    private Label result;
+	@FXML
+	private void handleGrammar(ActionEvent event) {
+		output.setText("\n" + lrParser.getGrammar());
+	}
 
-    @FXML
-    private TextArea output;
+	@FXML
+	private void handleFirst(ActionEvent event) {
+		output.setText("\n" + lrParser.getGrammar().getFirstSets());
+	}
 
-    @FXML
-    private void handleGrammar(ActionEvent event){
-        if(GrammarInputController.parserKind.equals("LR(0)") || GrammarInputController.parserKind.equals("SLR(1)")){
-            output.setText(GrammarInputController.lr0Parser.getGrammar()+"");
-        }else{
-            output.setText(GrammarInputController.lr1Parser.getGrammar()+"");
-        }
-    }
+	@FXML
+	private void handleFollow(ActionEvent event) {
+		output.setText("\n" + lrParser.getGrammar().getFallowSets());
+	}
 
-    @FXML
-    private void handleFirst(ActionEvent event){
-        if(GrammarInputController.parserKind.equals("LR(0)") || GrammarInputController.parserKind.equals("SLR(1)")){
-            String str = "";
-            for(String s : GrammarInputController.lr0Parser.getGrammar().getFirstSets().keySet()){
-                str += s + " : " + GrammarInputController.lr0Parser.getGrammar().getFirstSets().get(s) + "\n";
-            }
-            output.setText(str);
-        }else{
-            String str = "";
-            for(String s : GrammarInputController.lr1Parser.getGrammar().getFirstSets().keySet()){
-                str += s + " : " + GrammarInputController.lr1Parser.getGrammar().getFirstSets().get(s) + "\n";
-            }
-            output.setText(str);
-        }
-    }
+	@FXML
+	private void handleState(ActionEvent event) {
+		output.setText("\n" + lrParser.getStatesList());
+	}
 
-    @FXML
-    private void handleFollow(ActionEvent event){
-        if(GrammarInputController.parserKind.equals("LR(0)") || GrammarInputController.parserKind.equals("SLR(1)")){
-            String str = "";
-            for(String s : GrammarInputController.lr0Parser.getGrammar().getFallowSets().keySet()){
-                str += s + " : " + GrammarInputController.lr0Parser.getGrammar().getFallowSets().get(s) + "\n";
-            }
-            output.setText(str);
-        }else{
-            String str = "";
-            for(String s : GrammarInputController.lr1Parser.getGrammar().getFallowSets().keySet()){
-                str += s + " : " + GrammarInputController.lr1Parser.getGrammar().getFallowSets().get(s) + "\n";
-            }
-            output.setText(str);
-        }
-    }
+	@FXML
+	private void handleGoTo(ActionEvent event) {
+		output.setText("\n" + lrParser.getActionGoToTable().toString(1));
+	}
 
-    @FXML
-    private void handleState(ActionEvent event){
-        if(GrammarInputController.parserKind.equals("LR(0)") || GrammarInputController.parserKind.equals("SLR(1)")){
-            output.setText(GrammarInputController.lr0Parser.canonicalCollectionStr());
-        }else{
-            output.setText(GrammarInputController.lr1Parser.canonicalCollectionStr());
-        }
-    }
+	@FXML
+	private void handleAction(ActionEvent event) {
+		output.setText("\n" + lrParser.getActionGoToTable().toString(2));
+	}
 
-    @FXML
-    private void handleGoTo(ActionEvent event){
-        if(GrammarInputController.parserKind.equals("LR(0)") || GrammarInputController.parserKind.equals("SLR(1)")){
-            output.setText(GrammarInputController.lr0Parser.goToTableStr());
-        }else{
-            output.setText(GrammarInputController.lr1Parser.goToTableStr());
-        }
-    }
+	@FXML
+	private void handleActionGoTo(ActionEvent event) {
+		output.setText("\n" + lrParser.getActionGoToTable());
+	}
 
-    @FXML
-    private void handleAction(ActionEvent event){
-        if(GrammarInputController.parserKind.equals("LR(0)") || GrammarInputController.parserKind.equals("SLR(1)")){
-            output.setText(GrammarInputController.lr0Parser.actionTableStr());
-        }else{
-            output.setText(GrammarInputController.lr1Parser.actionTableStr());
-        }
-    }
+	@FXML
+	private void handleLog(ActionEvent event) {
+		output.setText("\n" + lrParser.getLog());
+	}
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        result.setVisible(false);
-        input.textProperty().addListener((observable, oldValue, newValue) -> {
-            String str = input.getText();
-            ArrayList<String> words = new ArrayList<>();
-            String[] split = str.trim().split("\\s+");
-            for(String s: split){
-                words.add(s);
-            }
-            if(GrammarInputController.parserKind.equals("LR(0)") || GrammarInputController.parserKind.equals("SLR(1)")){
-                boolean accept = GrammarInputController.lr0Parser.accept(words);
-                if(accept){
-                    result.setText("accepted");
-                    result.setTextFill(Color.GREEN);
-                    result.setVisible(true);
-                }else {
-                    result.setText("not accepted");
-                    result.setTextFill(Color.RED);
-                    result.setVisible(true);
-                }
-            }else{
-                boolean accept = GrammarInputController.lr1Parser.accept(words);
-                if(accept){
-                    result.setText("accepted");
-                    result.setTextFill(Color.GREEN);
-                    result.setVisible(true);
-                }else {
-                    result.setText("not accepted");
-                    result.setTextFill(Color.RED);
-                    result.setVisible(true);
-                }
-            }
-        });
-        if(GrammarInputController.parserKind.equals("LR(0)") || GrammarInputController.parserKind.equals("SLR(1)")){
-            output.setText(GrammarInputController.lr0Parser.getGrammar()+"");
-        }else{
-            output.setText(GrammarInputController.lr1Parser.getGrammar()+"");
-        }
-    }
+	@FXML
+	private void handleBack(ActionEvent event) throws IOException {
+		Button button = (Button) event.getSource();
+		Stage stage = (Stage) button.getScene().getWindow();
+		Parent root = load(getClass().getResource("Input.fxml"));
+		Scene scene = new Scene(root);
+		stage.setScene(scene);
+	}
+
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		result.setVisible(false);
+		input.textProperty().addListener(
+			(observable, oldValue, newValue)-> {
+				if (lrParser.accept(list(input.getText().trim().split("\\s+")))) {
+					result.setText("Accepted");
+					result.setTextFill(GREEN);
+					result.setVisible(true);
+				}
+				else {
+					result.setText("Rejected");
+					result.setTextFill(RED);
+					result.setVisible(true);
+				}
+				output.setText("\n" + lrParser.getLog());
+			}
+		);
+		output.setText("\n" + lrParser.getGrammar());
+	}
 }

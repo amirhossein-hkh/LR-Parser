@@ -1,244 +1,224 @@
 package util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toCollection;
+import static java.util.stream.IntStream.range;
+import static util.Utility.set;
+
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
-public class Grammar {
+/*
+	LR(0)
+	
+		S -> A B
+		A -> a
+		B -> A b
+		
+		a a b
 
-    private ArrayList<Rule> rules;
-    private HashSet<String> terminals;
-    private HashSet<String> variables;
-    private String startVariable;
-    private HashMap<String, HashSet<String>> firstSets;
-    private HashMap<String, HashSet<String>> fallowSets;
+	SRL(1), CLR(1), LALR(1)
+	
+		E -> T + E | T
+		T -> F * T | F
+		F -> ( E ) | id
+		
+		id + id * ( id + id )
+*/
 
-    public Grammar(String s) {
-        rules = new ArrayList<>();
-        terminals = new HashSet<>();
-        variables = new HashSet<>();
-        int line = 0;
-        for(String st : s.split("\n")){
-            String[] sides = st.split("->");
-            String leftSide = sides[0].trim();
-            variables.add(leftSide);
-            String[] rulesRightSide = sides[1].trim().split("\\|");
-            for (String rule : rulesRightSide) {
-                String[] rightSide = rule.trim().split("\\s+");
-                for (String terminal : rightSide) {
-                    if (!terminal.equals("epsilon")) {
-                        terminals.add(terminal);
-                    }
-                }
+public class Grammar /* TODO extends ArrayList<Rule>? */ {
 
-                if (line == 0) {
-                    startVariable = leftSide;
-                    rules.add(new Rule("S'", new String[]{startVariable}));
-                }
-                rules.add(new Rule(leftSide, rightSide));
-                line++;
-            }
-        }
-        for (String variable : variables) {
-            terminals.remove(variable);
-        }
-        System.out.println("Rules: ");
-        for (int i=0 ; i<rules.size() ; i++) {
-            System.out.println(i+" : " +rules.get(i));
-        }
+	private List<Rule> rules;
+	private Set<String> terminals;
+	private Set<String> variables;
+	private String startVariable;
+	private Map<String, Set<String>> firstSets;
+	private Map<String, Set<String>> fallowSets;
 
-        
-        computeFirstSets();
-        computeFollowSet();
-    }
+	public static final String StartRule = "S'";
+	public static final String EndToken = "$";
+	public static final String Epsilon = "epsilon"; // TODO why not "\u03B5"
 
-    public ArrayList<Rule> getRules() {
-        return rules;
-    }
-   
-    public int findRuleIndex(Rule rule){
-        for(int i=0 ; i<rules.size();i++){
-            if(rules.get(i).equals(rule)){
-                return i;
-            }
-        }
-        return -1;
-    }
-    public HashSet<String> getVariables() {
-        return variables;
-    }
+	public Grammar(String str) {
+		rules = new ArrayList<>();
+		terminals = new LinkedHashSet<>();
+		variables = new LinkedHashSet<>();
+		int rule = 0;
+		for (String line: str.split("\n")) {
+			String[] sides = line.split("->");
+			String lhs = sides[0].trim();
+			variables.add(lhs);
+			for (String rhs: sides[1].trim().split("\\|")) {
+				String[] tokens = rhs.trim().split("\\s+");
+				for (String token: tokens) {
+					if (token.equals(Epsilon)) continue;
+					terminals.add(token);
+				}
+				if (rule == 0) {
+					startVariable = lhs;
+					rules.add(new Rule(StartRule, startVariable));
+				}
+				rules.add(new Rule(lhs, tokens));
+				rule += 1;
+			}
+		}
+		terminals.removeAll(variables);
+		computeFirstSets();
+		computeFollowSets();
+	}
 
-    public String getStartVariable() {
-        return startVariable;
-    }
+	public List<Rule> getRules() {
+		return rules;
+	}
 
-    private void computeFirstSets() {
-        firstSets = new HashMap<>();
+	public Rule getRule(int i) {
+		return rules.get(i);
+	}
 
-        for (String s : variables) {
+	public int indexOfRule(Rule rule){
+		return rules.indexOf(rule);
+	}
 
-            HashSet<String> temp = new HashSet<>();
-            firstSets.put(s, temp);
-        }
-        while (true) {
-            boolean isChanged = false;
-            for (String variable : variables) {
-                HashSet<String> firstSet = new HashSet<>();
-                for (Rule rule : rules) {
-                    if (rule.getLeftSide().equals(variable)) {
-                        HashSet<String> addAll = computeFirst(rule.getRightSide(), 0);
-                        firstSet.addAll(addAll);
-                    }
-                }
-                if (!firstSets.get(variable).containsAll(firstSet)) {
-                    isChanged = true;
-                    firstSets.get(variable).addAll(firstSet);
-                }
+	public Set<Rule> getRulesByLhs(String variable) {
+		return rules.stream().filter(r-> r.lhs.equals(variable)).collect(toCollection(LinkedHashSet::new));
+	}
 
-            }
-            if (!isChanged) {
-                break;
-            }
-        }
+	public Set<String> getVariables() {
+		return variables;
+	}
 
-        firstSets.put("S'", firstSets.get(startVariable));
-    }
+	public String getStartVariable() {
+		return startVariable;
+	}
 
-    private void computeFollowSet() {
-        fallowSets = new HashMap<>();
-        for (String s : variables) {
-            HashSet<String> temp = new HashSet<>();
-            fallowSets.put(s, temp);
-        }
-        HashSet<String> start = new HashSet<>();
-        start.add("$");
-        fallowSets.put("S'", start);
+	public boolean isVariable(String symbol) {
+		return variables.contains(symbol);
+	}
 
-        while (true) {
-            boolean isChange = false;
-            for (String variable : variables) {
-                for (Rule rule : rules) {
-                    for (int i = 0; i < rule.getRightSide().length; i++) {
-                        if (rule.getRightSide()[i].equals(variable)) {
-                            HashSet<String> first;
-                            if (i == rule.getRightSide().length - 1) {
-                                first = fallowSets.get(rule.leftSide);
-                            } else {
-                                first = computeFirst(rule.getRightSide(), i + 1);
-                                if (first.contains("epsilon")) {
-                                    first.remove("epsilon");
-                                    first.addAll(fallowSets.get(rule.leftSide));
-                                }
-                            }
-                            if (!fallowSets.get(variable).containsAll(first)) {
-                                isChange = true;
-                                fallowSets.get(variable).addAll(first);
-                            }
-                        }
-                    }
-                }
-            }
-            if (!isChange) {
-                break;
-            }
-        }
-    }
+	public Set<String> getTerminals() {
+		return terminals;
+	}
+	
+	public boolean isTerminal(String symbol) {
+		return terminals.contains(symbol);
+	}
 
-    public HashSet<String> computeFirst(String[] string, int index) {
-        HashSet<String> first = new HashSet<>();
-        if (index == string.length) {
-            return first;
-        }
-        if (terminals.contains(string[index]) || string[index].equals("epsilon")) {
-            first.add(string[index]);
-            return first;
-        }
+	public Map<String, Set<String>> getFirstSets() {
+		return firstSets;
+	}
 
-        if (variables.contains(string[index])) {
-            for (String str : firstSets.get(string[index])) {
-                first.add(str);
-            }
-        }
+	public Map<String, Set<String>> getFallowSets() {
+		return fallowSets;
+	}
 
-        if (first.contains("epsilon")) {
-            if (index != string.length - 1) {
-                first.remove("epsilon");
-                first.addAll(computeFirst(string, index + 1));
-            }
-        }
-        return first;
-    }
+	private void computeFirstSets() {
+		firstSets = new LinkedHashMap<>() {
+			private static final long serialVersionUID = 1L;
+			public String toString() { return keySet().stream().map(s-> s + ": " + get(s)).collect(joining("\n")); }
+		};
+		firstSets.put(StartRule, null);
+		for (String variable: variables) firstSets.put(variable, new LinkedHashSet<>());
+		boolean changed;
+		do {
+			changed = false;
+			for (String variable: variables) {
+				Set<String> firstSet = new LinkedHashSet<>();
+				for (Rule rule: rules) {
+					if (!rule.lhs.equals(variable)) continue;
+					firstSet.addAll(computeFirst(rule.rhs, 0));
+				}
+				if (firstSets.get(variable).containsAll(firstSet)) continue;
+				changed = true;
+				firstSets.get(variable).addAll(firstSet);
+			}
+			
+		} while (changed);
+		firstSets.put(StartRule, firstSets.get(startVariable));
+	}
 
-    public HashSet<Rule> getRuledByLeftVariable(String variable) {
-        HashSet<Rule> variableRules = new HashSet<>();
-        for (Rule rule : rules) {
-            if (rule.getLeftSide().equals(variable)) {
-                variableRules.add(rule);
-            }
-        }
-        return variableRules;
-    }
+	private void computeFollowSets() {
+		fallowSets = new LinkedHashMap<>() {
+			private static final long serialVersionUID = 1L;
+			public String toString() { return keySet().stream().map(s-> s + ": " + get(s)).collect(joining("\n")); }
+		};
+		fallowSets.put(StartRule, set(EndToken));
+		for (String variable: variables) fallowSets.put(variable, new LinkedHashSet<>());
+		for (;;) {
+			boolean changed = false;
+			for (String variable: variables) {
+				for (Rule rule: rules) {
+					for (int i=0; i<rule.rhs.length; i+=1) {
+						if (!rule.rhs[i].equals(variable)) continue;
+						Set<String> first;
+						if (i == rule.rhs.length - 1) {
+							first = fallowSets.get(rule.lhs);
+						}
+						else {
+							first = computeFirst(rule.rhs, i + 1);
+							if (first.contains(Epsilon)) {
+								first.remove(Epsilon);
+								first.addAll(fallowSets.get(rule.lhs));
+							}
+						}
+						if (fallowSets.get(variable).containsAll(first)) continue;
+						changed = true;
+						fallowSets.get(variable).addAll(first);
+					}
+				}
+			}
+			if (!changed) break;
+		}
+	}
 
-    public boolean isVariable(String s) {
-        return variables.contains(s);
-    }
+	public Set<String> computeFirst(String[] rhs, int index) {
+		Set<String> first = new LinkedHashSet<>();
+		if (index == rhs.length) return first;
 
-    public HashMap<String, HashSet<String>> getFirstSets() {
-        return firstSets;
-    }
+		String symbol = rhs[index];
+		if (isTerminal(symbol) || symbol.equals(Epsilon)) {
+			first.add(symbol);
+			return first;
+		}
 
-    public HashMap<String, HashSet<String>> getFallowSets() {
-        return fallowSets;
-    }
+		if (isVariable(symbol)) {
+			for (String terminal: firstSets.get(symbol)) first.add(terminal);
+		}
+		if (first.contains(Epsilon)) {
+			if (index != rhs.length - 1) {
+				first.remove(Epsilon);
+				first.addAll(computeFirst(rhs, index + 1));
+			}
+		}
+		return first;
+	}
 
-    public HashSet<String> getTerminals() {
-        return terminals;
-    }
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 37 * hash + Objects.hashCode(rules);
+		hash = 37 * hash + Objects.hashCode(terminals);
+		hash = 37 * hash + Objects.hashCode(variables);
+		return hash;
+	}
 
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 37 * hash + Objects.hashCode(this.rules);
-        hash = 37 * hash + Objects.hashCode(this.terminals);
-        hash = 37 * hash + Objects.hashCode(this.variables);
-        return hash;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null || getClass() != obj.getClass()) return false;
+		final Grammar other = (Grammar) obj;
+		if (!rules.equals(other.rules)) return false;
+		if (!terminals.equals(other.terminals)) return false;
+		if (!variables.equals(other.variables)) return false;
+		return true;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Grammar other = (Grammar) obj;
-        if (!Objects.equals(this.rules, other.rules)) {
-            return false;
-        }
-        if (!Objects.equals(this.terminals, other.terminals)) {
-            return false;
-        }
-        if (!Objects.equals(this.variables, other.variables)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        String str = "";
-        for(Rule rule: rules){
-            str += rule + "\n";
-        }
-        return str;
-    }
+	@Override
+	public String toString() {
+		return range(0, rules.size()).mapToObj(i-> i + ") " + rules.get(i)).collect(joining("\n"));
+	}
 }

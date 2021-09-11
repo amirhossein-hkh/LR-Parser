@@ -1,105 +1,54 @@
 package lr1;
 
-import lr0.LR0Item;
-
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
-public class LR1Item {
+import lr0.LR0Item;
+import util.Rule;
 
-    private HashSet<String> lookahead;
-    private String leftSide;
-    private String[] rightSide;
-    private int dotPointer;
+public class LR1Item extends LR0Item {
 
-    public LR1Item(String leftSide, String[] rightSide, int dotPointer, HashSet<String> lookahead){
-        this.leftSide = leftSide;
-        this.rightSide = rightSide;
-        this.dotPointer = dotPointer;
-        this.lookahead = lookahead;
-    }
+	protected Set<String> lookahead;
 
-    public String getCurrent(){
-        if(dotPointer == rightSide.length){
-            return null;
-        }
-        return rightSide[dotPointer];
-    }
+	public LR1Item(Rule rule, Set<String> lookahead){
+		super(rule);
+		this.lookahead = lookahead;
+	}
 
-    boolean goTo() {
-        if (dotPointer >= rightSide.length) {
-            return false;
-        }
-        dotPointer++;
-        return true;
-    }
+	public LR1Item(LR1Item item){
+		super(item);
+		this.lookahead = item.lookahead;
+	}
 
-    public int getDotPointer() {
-        return dotPointer;
-    }
+	@Override
+	public <T extends LR0Item> T nextSymbol() {
+		return new LR1Item(this).goTo();
+	}
 
-    public String[] getRightSide() {
-        return rightSide;
-    }
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 31 * hash + dot;
+		hash = 31 * hash + Objects.hashCode(lhs);
+		hash = 31 * hash + Arrays.deepHashCode(rhs);
+		hash = 31 * hash + Objects.hashCode(lookahead);
+		return hash;
+	}
 
-    public HashSet<String> getLookahead() {
-        return lookahead;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj)
+			&& lookahead.equals(((LR1Item) obj).lookahead)
+		;
+	}
 
-    public String getLeftSide() {
-        return leftSide;
-    }
+	public  boolean equalLR0(LR1Item item){
+		return super.equals(item);
+	}
 
-    public void setLookahead(HashSet<String> lookahead) {
-        this.lookahead = lookahead;
-    }
-
-    public void setRightSide(String[] rightSide) {
-        this.rightSide = rightSide;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LR1Item lr1Item = (LR1Item) o;
-        return dotPointer == lr1Item.dotPointer &&
-                Objects.equals(lookahead, lr1Item.lookahead) &&
-                Objects.equals(leftSide, lr1Item.leftSide) &&
-                Arrays.equals(rightSide, lr1Item.rightSide);
-    }
-
-    public  boolean equalLR0(LR1Item item){
-        return leftSide.equals(item.getLeftSide()) && Arrays.equals(rightSide,item.getRightSide()) && dotPointer == item.getDotPointer();
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 31 * hash + this.dotPointer;
-        hash = 31 * hash + Objects.hashCode(this.leftSide);
-        hash = 31 * hash + Arrays.deepHashCode(this.rightSide);
-        hash = 31 * hash + Objects.hashCode(this.lookahead);
-        return hash;
-    }
-
-    @Override
-    public String toString() {
-        String str = leftSide + " -> ";
-        for (int i = 0; i < rightSide.length; i++) {
-            if (i == dotPointer) {
-                str += ".";
-            }
-            str += rightSide[i];
-            if(i != rightSide.length - 1){
-                str+= " ";
-            }
-        }
-        if (rightSide.length == dotPointer) {
-            str += ".";
-        }
-        str += " , " + lookahead;
-        return str;
-    }
+	@Override
+	public String toString() {
+		return super.toString() + " , " + lookahead;
+	}
 }

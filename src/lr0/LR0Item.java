@@ -1,102 +1,69 @@
 package lr0;
 
-import util.Rule;
+import static util.Grammar.Epsilon;
 
 import java.util.Arrays;
 import java.util.Objects;
 
+import util.Rule;
+
 public class LR0Item extends Rule {
 
-    protected int dotPointer;
+	protected int dot;
 
-    public LR0Item(Rule r) {
-        super(r.getLeftSide(), r.getRightSide());
-        int finished = 0;
-        if (r.getRightSide().length == 1 && r.getRightSide()[0].equals("epsilon")) {
-            finished = 1;
-        }
-        this.dotPointer = finished;
-    }
+	public LR0Item(Rule rule) {
+		super(rule);
+		var rhs = rule.getRhs(); 
+		dot = rhs.length == 1 && rhs[0].equals(Epsilon) ? 1 : 0;
+	}
 
-    public LR0Item(String leftSide, String[] rightSide, int dotPointer) {
-        super(leftSide, rightSide);
-        this.dotPointer = dotPointer;
-    }
+	public LR0Item(LR0Item item) {
+		super(item);
+		dot = item.dot;
+	}
 
-    public LR0Item(LR0Item item) {
-        super(item);
-        dotPointer = item.getDotPointer();
-    }
+	public int getDot() {
+		return dot;
+	}
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 89 * hash + this.dotPointer;
-        hash = 89 * hash + Objects.hashCode(this.leftSide);
-        hash = 89 * hash + Arrays.deepHashCode(this.rightSide);
-        return hash;
-    }
+	public String getSymbol() {
+		return dot == rhs.length ? null : rhs[dot];
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final LR0Item other = (LR0Item) obj;
-        if (this.dotPointer != other.dotPointer) {
-            return false;
-        }
-        if (!this.leftSide.equals(other.leftSide)) {
-            return false;
-        }
-        if (!Arrays.equals(this.rightSide, other.rightSide)) {
-            return false;
-        }
-        return true;
-    }
+	public <T extends LR0Item> T nextSymbol() {
+		return (T) new LR0Item(this).goTo();
+	}
 
-    @Override
-    public String toString() {
-        String str = leftSide + " -> ";
-        for (int i = 0; i < rightSide.length; i++) {
-            if (i == dotPointer) {
-                str += ".";
-            }
-            str += rightSide[i];
-            if(i != rightSide.length - 1){
-                str+= " ";
-            }
-        }
-        if (rightSide.length == dotPointer) {
-                str += ".";
-        }
-        return str;
-    }
-    
+	protected <T extends LR0Item> T goTo() {
+		if (dot < rhs.length) dot += 1;
+		return (T) this;
+	}
 
-    public int getDotPointer() {
-        return dotPointer;
-    }
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 89 * hash + dot;
+		hash = 89 * hash + Objects.hashCode(lhs);
+		hash = 89 * hash + Arrays.deepHashCode(rhs);
+		return hash;
+	}
 
-    boolean goTo() {
-        if (dotPointer >= rightSide.length) {
-            return false;
-        }
-        dotPointer++;
-        return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj)
+			&& dot == ((LR0Item) obj).dot
+		;
+	}
 
-    String getCurrentTerminal() {
-        if(dotPointer == rightSide.length){
-            return null;
-        }
-        return rightSide[dotPointer];
-    }
-
+	@Override
+	public String toString() {
+		String str = lhs + " -> ";
+		for (int i=0; i<rhs.length; i+=1) {
+			if (i == dot) str += ". ";
+			str += rhs[i];
+			if (i != rhs.length - 1) str += " ";
+		}
+		if (rhs.length == dot) str += " .";
+		return str;
+	}
 }

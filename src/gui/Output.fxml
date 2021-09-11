@@ -1,29 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import javafx.scene.shape.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane onDragDetected="#handleGrammar" prefHeight="534.0" prefWidth="702.0" style="-fx-background-color: &quot;ffffff&quot;;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.OutputController">
-   <children>
-      <Label layoutX="70.0" layoutY="38.0" text="enter your input below (with space) :" />
-      <TextField fx:id="input" layoutX="71.0" layoutY="76.0" prefHeight="25.0" prefWidth="517.0" />
-      <Label fx:id="result" layoutX="605.0" layoutY="81.0" text="result" />
-      <Line endX="600.0" layoutX="101.0" layoutY="134.0" startX="-100.0" />
-      <Line endX="300.0" layoutX="91.0" layoutY="334.0" rotate="90.0" startX="-100.0" />
-      <TextArea fx:id="output" editable="false" layoutX="193.0" layoutY="137.0" prefHeight="395.0" prefWidth="506.0">
+<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="700.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.OutputController">
+   <top>
+      <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="134.0" prefWidth="700.0" style="-fx-border-color: black; -fx-border-width: 0 0 1 0; -fx-background-color: white;" BorderPane.alignment="CENTER">
+         <children>
+            <Label layoutX="70.0" layoutY="38.0" text="enter your input below (with space) :" />
+            <TextField fx:id="input" layoutX="70.0" layoutY="76.0" prefHeight="25.0" prefWidth="517.0" />
+            <Label fx:id="result" layoutX="605.0" layoutY="81.0" text="result" />
+         </children>
+      </AnchorPane>
+   </top>
+   <left>
+      <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="383.0" minWidth="165.0" prefHeight="409.0" prefWidth="165.0" style="-fx-background-color: white;" BorderPane.alignment="TOP_CENTER">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <Button mnemonicParsing="false" onAction="#handleGrammar" style="-fx-background-color: &quot;ffffff&quot;;" text="Augmented Grammar" GridPane.halignment="CENTER" />
+            <Button mnemonicParsing="false" onAction="#handleFirst" style="-fx-background-color: &quot;ffffff&quot;;" text="First Sets" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <Button mnemonicParsing="false" onAction="#handleFollow" style="-fx-background-color: &quot;ffffff&quot;;" text="Follow Sets" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+            <Button mnemonicParsing="false" onAction="#handleState" style="-fx-background-color: &quot;ffffff&quot;;" text="Canonical Collection" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+            <Button mnemonicParsing="false" onAction="#handleGoTo" style="-fx-background-color: &quot;ffffff&quot;;" text="Go To Table" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+            <Button mnemonicParsing="false" onAction="#handleAction" style="-fx-background-color: &quot;ffffff&quot;;" text="Action Table" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
+            <Button mnemonicParsing="false" onAction="#handleLog" style="-fx-background-color: &quot;ffffff&quot;;" text="Parser Log" GridPane.halignment="CENTER" GridPane.rowIndex="7" />
+            <Button mnemonicParsing="false" onAction="#handleBack" text="Back" GridPane.halignment="CENTER" GridPane.rowIndex="8" />
+            <Button mnemonicParsing="false" onAction="#handleActionGoTo" style="-fx-background-color: &quot;ffffff&quot;;" text="Action &amp; GoTo Table" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+      </GridPane>
+   </left>
+   <center>
+      <TextArea fx:id="output" editable="false" prefHeight="439.0" prefWidth="567.0" style="-fx-border-color: black; -fx-border-width: 0 0 0 1;" BorderPane.alignment="CENTER">
          <font>
             <Font name="Monospaced Regular" size="13.0" />
-         </font></TextArea>
-      <Button layoutX="14.0" layoutY="173.0" mnemonicParsing="false" onAction="#handleGrammar" style="-fx-background-color: &quot;ffffff&quot;;" text="Augmented Grammar" />
-      <Button layoutX="56.0" layoutY="229.0" mnemonicParsing="false" onAction="#handleFirst" style="-fx-background-color: &quot;ffffff&quot;;" text="First Sets" />
-      <Button layoutX="48.0" layoutY="283.0" mnemonicParsing="false" onAction="#handleFollow" style="-fx-background-color: &quot;ffffff&quot;;" text="Follow Sets" />
-      <Button layoutX="20.0" layoutY="335.0" mnemonicParsing="false" onAction="#handleState" style="-fx-background-color: &quot;ffffff&quot;;" text="Canonical Collection" />
-      <Button layoutX="48.0" layoutY="390.0" mnemonicParsing="false" onAction="#handleGoTo" style="-fx-background-color: &quot;ffffff&quot;;" text="Go To Table" />
-      <Button layoutX="47.0" layoutY="441.0" mnemonicParsing="false" onAction="#handleAction" style="-fx-background-color: &quot;ffffff&quot;;" text="Action Table" />
-   </children>
-</AnchorPane>
+         </font>
+      </TextArea>
+   </center>
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+</BorderPane>

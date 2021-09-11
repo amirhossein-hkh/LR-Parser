@@ -1,101 +1,33 @@
 package lr0;
 
-import util.Grammar;
-import util.Rule;
+import static java.util.stream.Collectors.toSet;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Objects;
+import java.util.Set;
 
-public class LR0State {
-    
-    LinkedHashSet<LR0Item> items;
-    HashMap<String, LR0State> transition;
-    
-    public LR0State(Grammar grammar, HashSet<LR0Item> coreItems) {
-        items = new LinkedHashSet<>(coreItems);
-        transition = new HashMap<>();
-        closure(grammar);
-    }
-    
-    private void closure(Grammar grammar) {
-        boolean changeFlag = false;
-        do {
-            changeFlag = false;
-            HashSet<LR0Item> temp = new HashSet<>();
-            for (LR0Item item : items) {
-                
-                if (item.getCurrentTerminal()!=null && grammar.isVariable(item.getCurrentTerminal())) {
-                    HashSet<Rule> rules = grammar.getRuledByLeftVariable(item.getCurrentTerminal());
-                    temp.addAll(createLR0Item(rules));
-                }
-            }
-            if(!items.containsAll(temp)){
-                items.addAll(temp);
-                changeFlag = true;
-            }
-        } while (changeFlag);
-    }
-    
-    private HashSet<LR0Item> createLR0Item(HashSet<Rule> rules) {
-        HashSet<LR0Item> results = new HashSet<>();
-        for (Rule rule : rules) {
-            results.add(new LR0Item(rule));
-        }
-        return results;
-    }
-    
-    public void addTransition(String s, LR0State state){
-        transition.put(s, state);
-    }
+import util.Grammar;
+import util.State;
 
-    public HashSet<LR0Item> getItems() {
-        return items;
-    }
+public class LR0State extends State<LR0State, LR0Item> {
 
-    public HashMap<String, LR0State> getTransition() {
-        return transition;
-    }
-   
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 83 * hash + Objects.hashCode(this.items);
-        hash = 83 * hash + Objects.hashCode(this.transition);
-        return hash;
-    }
+	public LR0State(Grammar grammar, Set<LR0Item> items) {
+		this.items = new LinkedHashSet<>(items);
+		transitions = new LinkedHashMap<>();
+		closure(grammar);
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final LR0State other = (LR0State) obj;
-        if (!(this.items.containsAll(other.items) && other.items.containsAll(this.items))) {
-            return false;
-        }
-        if (!Objects.equals(this.transition, other.transition)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        String s = "";
-        for(LR0Item item:items){
-            s += item + "\n";
-        }
-        return s;
-    }
-    
-    
-    
+	private void closure(Grammar grammar) {
+		for (;;) {
+			Set<LR0Item> temp = items.stream()
+				.map(i-> i.getSymbol())
+				.filter(s-> s!=null && grammar.isVariable(s))
+				.flatMap(s-> grammar.getRulesByLhs(s).stream())
+				.map(LR0Item::new)
+				.collect(toSet())
+			;
+			if (items.containsAll(temp)) break;
+			items.addAll(temp);
+		}
+	}
 }
