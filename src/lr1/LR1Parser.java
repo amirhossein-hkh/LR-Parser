@@ -32,11 +32,11 @@ public class LR1Parser extends LRParser<LR1State, LR1Item> {
 		for (int i=0; i<statesList.size(); i+=1) {
 			var statei = statesList.get(i);
 			var itemsi = statei.getItems();
-			var lr0Itemsi = itemsi.stream().map(LR0Item::new).collect(toSet());
+			var itemsiLr0 = itemsi.stream().map(LR0Item::new).collect(toSet());
 			for (int j=i+1; j<statesList.size(); j+=1) {
 				var itemsj = statesList.get(j).getItems();
-				var lr0Itemsj = itemsj.stream().map(LR0Item::new).collect(toSet());
-				if (!lr0Itemsi.equals(lr0Itemsj)) continue;
+				var itemsjLr0 = itemsj.stream().map(LR0Item::new).collect(toSet());
+				if (!itemsiLr0.equals(itemsjLr0)) continue;
 				for (var itemi: itemsi) {
 					for (var itemj: itemsj) {
 						if (!itemi.equalLR0(itemj)) continue;
@@ -52,7 +52,7 @@ public class LR1Parser extends LRParser<LR1State, LR1Item> {
 					}
 				}
 				statesList.remove(j);
-				j -= 1;
+				j-=1;
 			}
 			newStateList.add(statesList.get(i));
 		}

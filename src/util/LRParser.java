@@ -141,7 +141,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		};
 		Stack<Integer> states = new Stack<>() {
 			private static final long serialVersionUID = 1L;
-			public String toString() { return stream().map(i->i.toString()).collect(joining(",")); }
+			public String toString() { return stream().map(i-> i.toString()).collect(joining(",")); }
 		};
 		
 		int sSize = max(2, 1 + (int) log10(statesList.size()));

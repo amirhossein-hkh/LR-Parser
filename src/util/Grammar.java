@@ -17,8 +17,8 @@ import java.util.Set;
 	LR(0)
 	
 		S -> A B
-		A -> a
 		B -> A b
+		A -> a
 		
 		a a b
 
@@ -42,7 +42,7 @@ public class Grammar /* TODO extends ArrayList<Rule>? */ {
 
 	public static final String StartRule = "S'";
 	public static final String EndToken = "$";
-	public static final String Epsilon = "epsilon"; // TODO why not "\u03B5"
+	public static final String Epsilon = "epsilon"; // TODO why not "\u03B5"?
 
 	public Grammar(String str) {
 		rules = new ArrayList<>();
@@ -133,8 +133,8 @@ public class Grammar /* TODO extends ArrayList<Rule>? */ {
 					firstSet.addAll(computeFirst(rule.rhs, 0));
 				}
 				if (firstSets.get(variable).containsAll(firstSet)) continue;
-				changed = true;
 				firstSets.get(variable).addAll(firstSet);
+				changed = true;
 			}
 			
 		} while (changed);
@@ -166,8 +166,8 @@ public class Grammar /* TODO extends ArrayList<Rule>? */ {
 							}
 						}
 						if (fallowSets.get(variable).containsAll(first)) continue;
-						changed = true;
 						fallowSets.get(variable).addAll(first);
+						changed = true;
 					}
 				}
 			}
@@ -175,11 +175,11 @@ public class Grammar /* TODO extends ArrayList<Rule>? */ {
 		}
 	}
 
-	public Set<String> computeFirst(String[] rhs, int index) {
+	public Set<String> computeFirst(String[] rhs, int i) {
 		Set<String> first = new LinkedHashSet<>();
-		if (index == rhs.length) return first;
+		if (i == rhs.length) return first;
 
-		String symbol = rhs[index];
+		String symbol = rhs[i];
 		if (isTerminal(symbol) || symbol.equals(Epsilon)) {
 			first.add(symbol);
 			return first;
@@ -189,9 +189,9 @@ public class Grammar /* TODO extends ArrayList<Rule>? */ {
 			for (String terminal: firstSets.get(symbol)) first.add(terminal);
 		}
 		if (first.contains(Epsilon)) {
-			if (index != rhs.length - 1) {
+			if (i != rhs.length - 1) {
 				first.remove(Epsilon);
-				first.addAll(computeFirst(rhs, index + 1));
+				first.addAll(computeFirst(rhs, i + 1));
 			}
 		}
 		return first;
