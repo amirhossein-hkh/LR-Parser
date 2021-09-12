@@ -23,7 +23,7 @@ public class LR1Item extends LR0Item {
 
 	@Override
 	public <T extends LR0Item> T nextSymbol() {
-		return new LR1Item(this).goTo();
+		return new LR1Item(this).advanceDot();
 	}
 
 	@Override

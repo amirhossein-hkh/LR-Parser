@@ -31,10 +31,10 @@ public class LR0Item extends Rule {
 	}
 
 	public <T extends LR0Item> T nextSymbol() {
-		return (T) new LR0Item(this).goTo();
+		return (T) new LR0Item(this).advanceDot();
 	}
 
-	protected <T extends LR0Item> T goTo() {
+	protected <T extends LR0Item> T advanceDot() {
 		if (dot < rhs.length) dot += 1;
 		return (T) this;
 	}
