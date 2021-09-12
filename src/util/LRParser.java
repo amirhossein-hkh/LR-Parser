@@ -120,7 +120,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 						System.out.println("it has a " + Reduce + "-" + action.type() + " confilct in state " + i);
 						return false;
 					}
-					actionGoToTable.put(i, terminal, new Action(Reduce, grammar.indexOfRule(new Rule(item))));
+					actionGoToTable.put(i, terminal, new Action(Reduce, grammar.indexOf(new Rule(item))));
 				}
 			}
 		}
@@ -145,7 +145,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		};
 		
 		int sSize = max(2, 1 + (int) log10(statesList.size()));
-		int rSize = max(4, grammar.getRules().stream().mapToInt(this::size).max().getAsInt());
+		int rSize = max(4, grammar.stream().mapToInt(this::size).max().getAsInt());
 		int tSize = max(2, grammar.getTerminals().stream().mapToInt(String::length).max().getAsInt());
 		int aSize = stream(ActionType.values()).mapToInt(at-> at.name().length()).max().getAsInt() + sSize + 1;
 		
@@ -170,7 +170,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 					break;
 	
 				case Reduce:
-					Rule rule = grammar.getRule(action.operand);
+					Rule rule = grammar.get(action.operand);
 					for (int i=0; i<rule.rhs.length; i+=1) { symbols.pop(); states.pop(); }
 					String lhs = rule.lhs;
 					symbols.push(lhs);

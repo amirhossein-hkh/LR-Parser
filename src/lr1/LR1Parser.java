@@ -15,13 +15,13 @@ public class LR1Parser extends LRParser<LR1State, LR1Item> {
 	}
 
 	public boolean parseCLR1() {
-		createStates(LR1State::new, new LR1State(grammar, set(new LR1Item(grammar.getRule(0), set(EndToken)))));
+		createStates(LR1State::new, new LR1State(grammar, set(new LR1Item(grammar.get(0), set(EndToken)))));
 		createGoToTable();
 		return createActionTable(i-> ((LR1Item) i).lookahead);
 	}
 
 	public boolean parseLALR1() {
-		createStates(LR1State::new, new LR1State(grammar, set(new LR1Item(grammar.getRule(0), set(EndToken)))));
+		createStates(LR1State::new, new LR1State(grammar, set(new LR1Item(grammar.get(0), set(EndToken)))));
 		createStatesForLALR1();
 		createGoToTable();
 		return createActionTable(i-> ((LR1Item) i).lookahead);

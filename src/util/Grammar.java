@@ -3,12 +3,10 @@ package util;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.IntStream.range;
-import static util.Utility.set;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -31,9 +29,9 @@ import java.util.Set;
 		id + id * ( id + id )
 */
 
-public class Grammar /* TODO extends ArrayList<Rule>? */ {
-
-	private List<Rule> rules;
+public class Grammar extends ArrayList<Rule> {
+	private static final long serialVersionUID = 1L;
+	
 	private Set<String> terminals;
 	private Set<String> variables;
 	private String startVariable;
@@ -45,7 +43,6 @@ public class Grammar /* TODO extends ArrayList<Rule>? */ {
 	public static final String Epsilon = "epsilon"; // TODO why not "\u03B5"?
 
 	public Grammar(String str) {
-		rules = new ArrayList<>();
 		terminals = new LinkedHashSet<>();
 		variables = new LinkedHashSet<>();
 		int rule = 0;
@@ -61,9 +58,9 @@ public class Grammar /* TODO extends ArrayList<Rule>? */ {
 				}
 				if (rule == 0) {
 					startVariable = lhs;
-					rules.add(new Rule(StartRule, startVariable));
+					add(new Rule(StartRule, startVariable));
 				}
-				rules.add(new Rule(lhs, tokens));
+				add(new Rule(lhs, tokens));
 				rule += 1;
 			}
 		}
@@ -72,20 +69,8 @@ public class Grammar /* TODO extends ArrayList<Rule>? */ {
 		computeFollowSets();
 	}
 
-	public List<Rule> getRules() {
-		return rules;
-	}
-
-	public Rule getRule(int i) {
-		return rules.get(i);
-	}
-
-	public int indexOfRule(Rule rule){
-		return rules.indexOf(rule);
-	}
-
 	public Set<Rule> getRulesByLhs(String variable) {
-		return rules.stream().filter(r-> r.lhs.equals(variable)).collect(toCollection(LinkedHashSet::new));
+		return stream().filter(r-> r.lhs.equals(variable)).collect(toCollection(LinkedHashSet::new));
 	}
 
 	public Set<String> getVariables() {
@@ -128,7 +113,7 @@ public class Grammar /* TODO extends ArrayList<Rule>? */ {
 			changed = false;
 			for (String variable: variables) {
 				Set<String> firstSet = new LinkedHashSet<>();
-				for (Rule rule: rules) {
+				for (Rule rule: this) {
 					if (!rule.lhs.equals(variable)) continue;
 					firstSet.addAll(computeFirst(rule.rhs, 0));
 				}
@@ -146,12 +131,12 @@ public class Grammar /* TODO extends ArrayList<Rule>? */ {
 			private static final long serialVersionUID = 1L;
 			public String toString() { return keySet().stream().map(s-> s + ": " + get(s)).collect(joining("\n")); }
 		};
-		fallowSets.put(StartRule, set(EndToken));
+		fallowSets.put(StartRule, Utility.set(EndToken));
 		for (String variable: variables) fallowSets.put(variable, new LinkedHashSet<>());
 		for (;;) {
 			boolean changed = false;
 			for (String variable: variables) {
-				for (Rule rule: rules) {
+				for (Rule rule: this) {
 					for (int i=0; i<rule.rhs.length; i+=1) {
 						if (!rule.rhs[i].equals(variable)) continue;
 						Set<String> first;
@@ -200,7 +185,7 @@ public class Grammar /* TODO extends ArrayList<Rule>? */ {
 	@Override
 	public int hashCode() {
 		int hash = 3;
-		hash = 37 * hash + Objects.hashCode(rules);
+		hash = 37 * hash + Objects.hashCode(this);
 		hash = 37 * hash + Objects.hashCode(terminals);
 		hash = 37 * hash + Objects.hashCode(variables);
 		return hash;
@@ -211,7 +196,7 @@ public class Grammar /* TODO extends ArrayList<Rule>? */ {
 		if (this == obj) return true;
 		if (obj == null || getClass() != obj.getClass()) return false;
 		final Grammar other = (Grammar) obj;
-		if (!rules.equals(other.rules)) return false;
+		if (!this.equals(other)) return false;
 		if (!terminals.equals(other.terminals)) return false;
 		if (!variables.equals(other.variables)) return false;
 		return true;
@@ -219,6 +204,6 @@ public class Grammar /* TODO extends ArrayList<Rule>? */ {
 
 	@Override
 	public String toString() {
-		return range(0, rules.size()).mapToObj(i-> i + ") " + rules.get(i)).collect(joining("\n"));
+		return range(0, size()).mapToObj(i-> i + ") " + get(i)).collect(joining("\n"));
 	}
 }
