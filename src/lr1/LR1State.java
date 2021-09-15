@@ -23,25 +23,8 @@ public class LR1State extends State<LR1State, LR1Item> {
 		do {
 			changed = false;
 			for (LR1Item item1: items) {
-				/*
-				if (item.getDot() == item.getRhs().length || !grammar.isVariable(item.getSymbol())) continue;
-				Set<String> lookahead = new LinkedHashSet<>();
-				*/
 				if (item1.atEnd() || grammar.isTerminal(item1.getSymbol())) continue;
 				Set<String> newLA = newLookahead(grammar, item1);
-				/*
-				if (item.getDot() == item.getRhs().length - 1) {
-					lookahead.addAll(item.lookahead);
-				}
-				else {
-					Set<String> firstSet = grammar.computeFirst(item.getRhs(), item.getDot() + 1);
-					if (firstSet.contains(Epsilon)) {
-						firstSet.remove(Epsilon);
-						firstSet.addAll(item.lookahead);
-					}
-					lookahead.addAll(firstSet);
-				}
-				*/
 				rule: for (Rule rule: grammar.getRulesByLhs(item1.getSymbol())) {
 					var newItemLA = new LinkedHashSet<>(newLA); // make a copy!
 					var newItem = new LR1Item(rule, newItemLA);
@@ -68,9 +51,6 @@ public class LR1State extends State<LR1State, LR1Item> {
 
 	private Set<String> newLookahead(Grammar grammar, LR1Item item) {
 		Set<String> newLA = new LinkedHashSet<>();
-		/*
-		if (item.getDot() == item.getRhs().length - 1) {
-		*/
 		if (item.lastSymbol()) {
 			newLA.addAll(item.lookahead);
 		}
