@@ -22,9 +22,14 @@ public class LR1State extends State<LR1State, LR1Item> {
 		boolean changed;
 		do {
 			changed = false;
-			for (LR1Item item: items) {
+			for (LR1Item item1: items) {
+				/*
 				if (item.getDot() == item.getRhs().length || !grammar.isVariable(item.getSymbol())) continue;
 				Set<String> lookahead = new LinkedHashSet<>();
+				*/
+				if (item1.atEnd() || grammar.isTerminal(item1.getSymbol())) continue;
+				Set<String> newLA = newLookahead(grammar, item1);
+				/*
 				if (item.getDot() == item.getRhs().length - 1) {
 					lookahead.addAll(item.lookahead);
 				}
@@ -36,19 +41,20 @@ public class LR1State extends State<LR1State, LR1Item> {
 					}
 					lookahead.addAll(firstSet);
 				}
-				rule: for (Rule rule: grammar.getRulesByLhs(item.getSymbol())) {
-					var newItemLA = new LinkedHashSet<>(lookahead);
+				*/
+				rule: for (Rule rule: grammar.getRulesByLhs(item1.getSymbol())) {
+					var newItemLA = new LinkedHashSet<>(newLA); // make a copy!
 					var newItem = new LR1Item(rule, newItemLA);
 					// merge lookaheads with existing item
-					for (LR1Item existingItem: items) {
-						if (!existingItem.equalLR0(newItem)) continue;
-						var existingItemtLA = existingItem.lookahead;
-						if (existingItemtLA.containsAll(newItemLA)) continue rule;
+					for (LR1Item item2: items) {
+						if (!item2.equalLR0(newItem)) continue;
+						var item2LA = item2.lookahead;
+						if (item2LA.containsAll(newItemLA)) continue rule;
 						// changing the lookahead will change the hash code of the item,
 						// which means it must be re-added.
-						items.remove(existingItem);
-						existingItemtLA.addAll(newItemLA);
-						items.add(existingItem);
+						items.remove(item2);
+						item2LA.addAll(newItemLA);
+						items.add(item2);
 						changed = true;
 						continue rule;
 					}
@@ -58,5 +64,24 @@ public class LR1State extends State<LR1State, LR1Item> {
 				if (changed) break;
 			}
 		} while (changed);
+	}
+
+	private Set<String> newLookahead(Grammar grammar, LR1Item item) {
+		Set<String> newLA = new LinkedHashSet<>();
+		/*
+		if (item.getDot() == item.getRhs().length - 1) {
+		*/
+		if (item.lastSymbol()) {
+			newLA.addAll(item.lookahead);
+		}
+		else {
+			Set<String> firstSet = grammar.computeFirst(item.getRhs(), item.getDot() + 1);
+			if (firstSet.contains(Epsilon)) {
+				firstSet.remove(Epsilon);
+				firstSet.addAll(item.lookahead);
+			}
+			newLA.addAll(firstSet);
+		}
+		return newLA;
 	}
 }
