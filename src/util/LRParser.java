@@ -89,27 +89,19 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		}
 	}
 	
-	protected void createGoToTable() {
+	protected boolean createActionGoToTable(Function<I, Set<String>> f) {
 		for (int i=0; i<statesList.size(); i+=1) {
 			var transitions = statesList.get(i).transitions;
 			for (String symbol: (Set<String>) transitions.keySet()) {
-				if (!grammar.isVariable(symbol)) continue;
-				actionGoToTable.put(i, symbol, statesList.indexOf(transitions.get(symbol)));
-			}
-		}
-	}
-
-	protected boolean createActionTable(Function<I, Set<String>> f) {
-		for (int i=0; i<statesList.size(); i+=1) {
-			var transitions = statesList.get(i).transitions;
-			for (String symbol: (Set<String>) transitions.keySet()) {
-				if (!grammar.isTerminal(symbol)) continue;
-				actionGoToTable.put(i, symbol, new Action(Shift, statesList.indexOf(transitions.get(symbol))));
+				if (grammar.isVariable(symbol))
+					actionGoToTable.put(i, symbol, statesList.indexOf(transitions.get(symbol)));
+				else
+					actionGoToTable.put(i, symbol, new Action(Shift, statesList.indexOf(transitions.get(symbol))));
 			}
 		}
 		for (int i=0; i<statesList.size(); i+=1) {
 			for (var item: (Set<I>) statesList.get(i).items) {
-				if (item.getDot() != item.rhs.length) continue;
+				if (!item.atEnd()) continue;
 				if (item.lhs.equals(StartRule)) {
 					actionGoToTable.put(i, EndToken, new Action(Accept, 0));
 					continue;
@@ -150,12 +142,12 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		int aSize = stream(ActionType.values()).mapToInt(at-> at.name().length()).max().getAsInt() + sSize + 1;
 		
 		String format1 = format("%%%dd %%-%ds ", sSize, tSize);
-		String format2 = format("%%-%ds - %%%dd: %%-%ds | %%s | %%s\n", aSize, sSize, rSize);
+		String format2 = format("%%-%ds - %%%dd: %%-%ds | %%-9s | %%s\n", aSize, sSize, rSize);
 
 		String token = "";
 		int index = -1, state = -1;
 		Action action = new Action(Shift, 0);
-		log.append(format(format("%%%ds %%-%ds %%-%ds - %%%ds: %%-%ds | %%s | %%s\n\n", sSize, tSize, aSize, sSize, rSize), "st", "tk", "action", "ns", "rule", "symbols", "states"));
+		log.append(format(format("%%%ds %%-%ds %%-%ds - %%%ds: %%-%ds | %%-9s | %%s\n\n", sSize, tSize, aSize, sSize, rSize), "st", "tk", "action", "ns", "rule", "symbols", "states"));
 		log.append(" ".repeat(sSize + tSize + 2));
 		do {
 			switch (action.type) {
