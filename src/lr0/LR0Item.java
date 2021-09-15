@@ -26,8 +26,16 @@ public class LR0Item extends Rule {
 		return dot;
 	}
 
+	public boolean atEnd() {
+		return dot == rhs.length;
+	}
+
+	public boolean lastSymbol() {
+		return dot == rhs.length - 1;
+	}
+
 	public String getSymbol() {
-		return dot == rhs.length ? null : rhs[dot];
+		return atEnd() ? null : rhs[dot];
 	}
 
 	public <T extends LR0Item> T nextSymbol() {
@@ -35,7 +43,7 @@ public class LR0Item extends Rule {
 	}
 
 	protected <T extends LR0Item> T advanceDot() {
-		if (dot < rhs.length) dot += 1;
+		if (!atEnd()) dot += 1;
 		return (T) this;
 	}
 
