@@ -137,7 +137,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		};
 		
 		int sSize = max(2, 1 + (int) log10(statesList.size()));
-		int rSize = max(4, grammar.stream().mapToInt(this::size).max().getAsInt());
+		int rSize = max(5, grammar.stream().mapToInt(this::size).max().getAsInt());
 		int tSize = max(2, grammar.getTerminals().stream().mapToInt(String::length).max().getAsInt());
 		int aSize = stream(ActionType.values()).mapToInt(at-> at.name().length()).max().getAsInt() + sSize + 1;
 		
@@ -147,7 +147,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		String token = "";
 		int index = -1, state = -1;
 		Action action = new Action(Shift, 0);
-		log.append(format(format("%%%ds %%-%ds %%-%ds - %%%ds: %%-%ds | %%-9s | %%s\n\n", sSize, tSize, aSize, sSize, rSize), "st", "tk", "action", "ns", "rule", "symbols", "states"));
+		log.append(format(format("%%%ds %%-%ds %%-%ds - %%%ds: %%-%ds | %%-9s | %%s\n\n", sSize, tSize, aSize, sSize, rSize), "st", "tk", "action", "ns", "tk/rl", "symbols", "states"));
 		log.append(" ".repeat(sSize + tSize + 2));
 		do {
 			switch (action.type) {
@@ -217,13 +217,13 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 
 			str += " ".repeat(sSize);
 			if (access) for (String terminal: terminals) str += format("%-"+ (max(tSize, sSize)+1) + "s", terminal);
-			if (access && goTo) str += " ";
+			//if (access && goTo) str += " ";
 			if (goTo) for (String variable: variables) str += format("%"+ max(vSize, sSize-1) + "s ", variable);
 			str += "\n";
 
 			String brd = " ".repeat(sSize-1);
 			if (access) brd += "+" + "-".repeat(terminals.size()*(max(tSize, sSize)+1)-1) + "+";
-			if (goTo) brd += "+" + "-".repeat(variables.size()*max(vSize, sSize)-1) + "+";
+			if (goTo) brd += (access ? "" : "+") + "-".repeat(variables.size()*max(vSize, sSize)-1) + "+";
 			str += brd + "\n";
 
 			for (int i=0; i<statesList.size(); i+=1) {
@@ -232,7 +232,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 					Action action = get(i, terminal);
 					str += format("%-" + max(tSize, sSize) + "s|", action == null ? "" : action);
 				}
-				if (access && goTo) str += "|";
+				//if (access && goTo) str += "|";
 				if (goTo) for (String variable: variables) {
 					Integer state = get(i, variable);
 					str += format("%"+ max(vSize, sSize-1) + "s|", state == null ? "" : state);
