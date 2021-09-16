@@ -43,7 +43,7 @@ public class LR1Item extends LR0Item {
 		;
 	}
 
-	public  boolean equalLR0(LR1Item item){
+	public boolean equalsLR0(LR1Item item){
 		return super.equals(item);
 	}
 
