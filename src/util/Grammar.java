@@ -56,10 +56,7 @@ public class Grammar extends ArrayList<Rule> {
 					if (token.equals(Epsilon)) continue;
 					terminals.add(token);
 				}
-				if (rule == 0) {
-					startVariable = lhs;
-					add(new Rule(StartRule, startVariable));
-				}
+				if (rule == 0) add(new Rule(StartRule, startVariable = lhs));
 				add(new Rule(lhs, tokens));
 				rule += 1;
 			}
