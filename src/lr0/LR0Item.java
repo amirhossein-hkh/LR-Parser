@@ -38,7 +38,7 @@ public class LR0Item extends Rule {
 		return atEnd() ? null : rhs[dot];
 	}
 
-	public <T extends LR0Item> T nextSymbol() {
+	public <T extends LR0Item> T toNextSymbol() {
 		return (T) new LR0Item(this).advanceDot();
 	}
 

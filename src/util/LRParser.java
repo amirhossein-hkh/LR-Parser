@@ -74,7 +74,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 			for (String symbol: itemsi.stream().map(it-> it.getSymbol()).filter(s-> s!=null).collect(toSet())) {
 				boolean exist = false;
 				var nextState = newState.apply(grammar,
-					itemsi.stream().filter(it-> symbol.equals(it.getSymbol())).map(I::<I>nextSymbol).collect(toSet())
+					itemsi.stream().filter(it-> symbol.equals(it.getSymbol())).map(I::<I>toNextSymbol).collect(toSet())
 				);
 				for (int j=0; j<statesList.size(); j+=1) {
 					var statej = statesList.get(j);
