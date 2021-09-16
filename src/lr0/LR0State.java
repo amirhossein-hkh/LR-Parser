@@ -17,15 +17,15 @@ public class LR0State extends State<LR0State, LR0Item> {
 
 	private void closure(Grammar grammar) {
 		for (;;) {
-			Set<LR0Item> temp = items.stream()
+			Set<LR0Item> newItems = items.stream()
 				.map(i-> i.getSymbol())
 				.filter(s-> s!=null && grammar.isVariable(s))
 				.flatMap(s-> grammar.getRulesByLhs(s).stream())
 				.map(LR0Item::new)
 				.collect(toSet())
 			;
-			if (items.containsAll(temp)) break;
-			items.addAll(temp);
+			if (items.containsAll(newItems)) break;
+			items.addAll(newItems);
 		}
 	}
 }
