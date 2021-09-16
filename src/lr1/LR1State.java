@@ -2,7 +2,6 @@ package lr1;
 
 import static util.Grammar.Epsilon;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -14,7 +13,6 @@ public class LR1State extends State<LR1State, LR1Item> {
 
 	public LR1State(Grammar grammar, Set<LR1Item> items){
 		this.items = new LinkedHashSet<>(items);
-		transitions = new LinkedHashMap<>();
 		closure(grammar);
 	}
 

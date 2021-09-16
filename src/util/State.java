@@ -2,6 +2,7 @@ package util;
 
 import static java.util.stream.Collectors.joining;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -9,7 +10,7 @@ import java.util.Set;
 public class State<S extends State, I extends Rule> {
 
 	protected Set<I> items;
-	protected Map<String, S> transitions;
+	protected Map<String, S> transitions = new LinkedHashMap<>();
 
 	public Set<I> getItems() {
 		return items;

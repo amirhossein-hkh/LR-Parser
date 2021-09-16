@@ -2,7 +2,6 @@ package lr0;
 
 import static java.util.stream.Collectors.toSet;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -13,7 +12,6 @@ public class LR0State extends State<LR0State, LR0Item> {
 
 	public LR0State(Grammar grammar, Set<LR0Item> items) {
 		this.items = new LinkedHashSet<>(items);
-		transitions = new LinkedHashMap<>();
 		closure(grammar);
 	}
 
