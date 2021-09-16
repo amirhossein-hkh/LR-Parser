@@ -35,26 +35,8 @@ public class LR1Parser extends LRParser<LR1State, LR1Item> {
 				var itemsj = statesList.get(j).getItems();
 				var itemsjLR0 = itemsj.stream().map(LR0Item::new).collect(toSet());
 				if (!itemsiLR0.equals(itemsjLR0)) continue;
-				/* TODO sostituito dal seguente, eliminare
-				for (var itemi: itemsi) {
-					for (var itemj: itemsj) {
-						if (!itemi.equalsLR0(itemj)) continue;
-						itemi.lookahead.addAll(itemj.lookahead);
-						break;
-					}
-				}
-				*/
 				itemsi.forEach(iti-> iti.lookahead.addAll(itemsj.stream().filter(itj-> itj.equalsLR0(iti)).findFirst().get().lookahead));
-				/*
-				for (var state: statesList) {
-					var transitions = state.getTransitions();
-					for (var e: transitions.entrySet()) {
-						if (!e.getValue().getItems().equals(itemsj)) continue;
-						transitions.put(e.getKey(), statei);
-					}
-				}
-				*/
-				statesList.forEach(st1->{ var ts = st1.getTransitions(); ts.forEach((s,st2)->{ if (st2.getItems().equals(itemsj)) ts.put(s, statei); }); });
+				statesList.forEach(st1->{ var ts = st1.getTransitions(); ts.forEach((s,st2)->{ if (st2.getItems().equals(itemsj)) ts.put(s,statei); }); });
 				statesList.remove(j);
 			}
 			newStateList.add(statesList.get(i));
