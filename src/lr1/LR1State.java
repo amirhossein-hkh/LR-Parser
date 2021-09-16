@@ -24,21 +24,21 @@ public class LR1State extends State<LR1State, LR1Item> {
 				if (item1.atEnd() || grammar.isTerminal(item1.getSymbol())) continue;
 				Set<String> newLA = newLookahead(grammar, item1);
 				for (Rule rule: grammar.getRulesByLhs(item1.getSymbol())) {
-					var newItemLA = new LinkedHashSet<>(newLA); // make a copy!
-					var newItem = new LR1Item(rule, newItemLA);
+					var newItem = new LR1Item(rule, null);
 					// merge lookaheads with existing item
 					LR1Item item2 = items.stream().filter(it-> it.equalsLR0(newItem)).findFirst().orElse(null);
 					if (item2 != null) {
 						var item2LA = item2.lookahead;
-						if (item2LA.containsAll(newItemLA)) continue;
+						if (item2LA.containsAll(newLA)) continue;
 						// changing the lookahead will change the hash code of the item,
 						// which means it must be re-added.
 						items.remove(item2);
-						item2LA.addAll(newItemLA);
+						item2LA.addAll(newLA);
 						items.add(item2);
 						changed = true;
 						continue;
 					}
+					newItem.lookahead = new LinkedHashSet<>(newLA); // make a copy!
 					items.add(newItem);
 					changed = true;
 				}
