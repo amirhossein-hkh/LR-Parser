@@ -3,7 +3,6 @@ package util;
 import static java.lang.Math.log10;
 import static java.lang.Math.max;
 import static java.lang.String.format;
-import static java.lang.String.join;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
@@ -40,13 +39,9 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 	}
 
 	public record Action(ActionType type, int operand) {
-		public Action(ActionType type, int operand) {
-			this.type = type;
-			this.operand = operand;
-		}
 		@Override
 		public String toString() {
-			return type.sigla + "" + (type == Accept ? "" : operand);
+			return type.sigla + (type == Accept ? "" : operand);
 		}
 	}
 
@@ -129,11 +124,15 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		tokens.add(EndToken);
 		Stack<String> symbols = new Stack<String>() {
 			private static final long serialVersionUID = 1L;
-			public String toString() { return join("", this); }
+			public String toString() { // return join("", this); } /*
+				return join("", this);
+			} //*/ 
 		};
 		Stack<Integer> states = new Stack<>() {
 			private static final long serialVersionUID = 1L;
-			public String toString() { return stream().map(i-> i.toString()).collect(joining(",")); }
+			public String toString() { // return stream().map(i-> i.toString()).collect(joining(",")); } /*
+				return join(",", this);
+			} //*/
 		};
 		
 		int sSize = max(2, 1 + (int) log10(statesList.size()));
@@ -142,12 +141,12 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		int aSize = stream(ActionType.values()).mapToInt(at-> at.name().length()).max().getAsInt() + sSize + 1;
 		
 		String format1 = format("%%%dd %%-%ds ", sSize, tSize);
-		String format2 = format("%%-%ds - %%%dd: %%-%ds | %%-9s | %%s\n", aSize, sSize, rSize);
+		String format2 = format("%%-%ds - %%%dd: %%-%ds | %%-8s | %%s\n", aSize, sSize, rSize);
 
 		String token = "";
 		int index = -1, state = -1;
 		Action action = new Action(Shift, 0);
-		log.append(format(format("%%%ds %%-%ds %%-%ds - %%%ds: %%-%ds | %%-9s | %%s\n\n", sSize, tSize, aSize, sSize, rSize), "st", "tk", "action", "ns", "tk/rl", "symbols", "states"));
+		log.append(format(format("%%%ds %%-%ds %%-%ds - %%%ds: %%-%ds | %%-8s | %%s\n\n", sSize, tSize, aSize, sSize, rSize), "st", "tk", "action", "ns", "tk/rl", "symbols", "states"));
 		log.append(" ".repeat(sSize + tSize + 2));
 		do {
 			switch (action.type) {
@@ -177,8 +176,16 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		return false;
 	}
 	
+	public String join(String del, Stack stack) {
+		var str = ""; for (int i=stack.size()-1, e=i-6; i>=0; i-=1) {
+			if (i==e && i>0) return "\u2026" + del + str; 
+			str = stack.get(i) + (str.length() == 0 ? "" : del) + str; 
+		}
+		return str;
+	}
+	
 	private String reduce(Rule r) {
-		return join("", r.rhs) + "->" + r.lhs;
+		return String.join("", r.rhs) + "->" + r.lhs;
 	}
 	
 	private int size(Rule r) {
