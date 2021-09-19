@@ -2,9 +2,6 @@ package lr0;
 
 import static util.Grammar.Epsilon;
 
-import java.util.Arrays;
-import java.util.Objects;
-
 import util.Rule;
 
 public class LR0Item extends Rule {
@@ -49,11 +46,8 @@ public class LR0Item extends Rule {
 
 	@Override
 	public int hashCode() {
-		int hash = 7;
-		hash = 89 * hash + dot;
-		hash = 89 * hash + Objects.hashCode(lhs);
-		hash = 89 * hash + Arrays.deepHashCode(rhs);
-		return hash;
+		int hash = super.hashCode();
+		return 31 * hash + dot;
 	}
 
 	@Override

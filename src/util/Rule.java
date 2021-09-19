@@ -29,10 +29,9 @@ public class Rule {
 
 	@Override
 	public int hashCode() {
-		int hash = 3;
-		hash = 29 * hash + Objects.hashCode(lhs);
-		hash = 29 * hash + Arrays.deepHashCode(rhs);
-		return hash;
+		int hash = 7;
+		hash = 31 * hash + Objects.hashCode(lhs);
+		return 31 * hash + Arrays.hashCode(rhs);
 	}
 
 	@Override

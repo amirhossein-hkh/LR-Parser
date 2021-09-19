@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 /*
@@ -175,26 +174,6 @@ public class Grammar extends ArrayList<Rule> {
 			}
 		}
 		return first;
-	}
-
-	@Override
-	public int hashCode() {
-		int hash = 3;
-		hash = 37 * hash + Objects.hashCode(this);
-		hash = 37 * hash + Objects.hashCode(terminals);
-		hash = 37 * hash + Objects.hashCode(variables);
-		return hash;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null || getClass() != obj.getClass()) return false;
-		final Grammar other = (Grammar) obj;
-		if (!this.equals(other)) return false;
-		if (!terminals.equals(other.terminals)) return false;
-		if (!variables.equals(other.variables)) return false;
-		return true;
 	}
 
 	@Override

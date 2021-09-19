@@ -1,6 +1,5 @@
 package lr1;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 
@@ -28,12 +27,8 @@ public class LR1Item extends LR0Item {
 
 	@Override
 	public int hashCode() {
-		int hash = 7;
-		hash = 31 * hash + dot;
-		hash = 31 * hash + Objects.hashCode(lhs);
-		hash = 31 * hash + Arrays.deepHashCode(rhs);
-		hash = 31 * hash + Objects.hashCode(lookahead);
-		return hash;
+		int hash = super.hashCode();
+		return 31 * hash + Objects.hashCode(lookahead);
 	}
 
 	@Override
