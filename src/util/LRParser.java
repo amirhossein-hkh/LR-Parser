@@ -15,7 +15,6 @@ import static util.LRParser.ActionType.Shift;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
@@ -67,10 +66,10 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 			var statei = statesList.get(i);
 			Set<I> itemsi = statei.items;
 			for (String symbol: itemsi.stream().map(it-> it.getSymbol()).filter(s-> s!=null).collect(toSet())) {
-				boolean exist = false;
 				var nextState = newState.apply(grammar,
 					itemsi.stream().filter(it-> symbol.equals(it.getSymbol())).map(I::<I>toNextSymbol).collect(toSet())
 				);
+				boolean exist = false;
 				for (int j=0; j<statesList.size(); j+=1) {
 					var statej = statesList.get(j);
 					if (!statej.items.equals(nextState.items)) continue;
@@ -87,7 +86,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 	protected boolean createActionGoToTable(Function<I, Set<String>> f) {
 		for (int i=0; i<statesList.size(); i+=1) {
 			var transitions = statesList.get(i).transitions;
-			for (String symbol: (Set<String>) transitions.keySet()) {
+			for (var symbol: (Set<String>) transitions.keySet()) {
 				if (grammar.isVariable(symbol))
 					actionGoToTable.put(i, symbol, statesList.indexOf(transitions.get(symbol)));
 				else
@@ -101,7 +100,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 					actionGoToTable.put(i, EndToken, new Action(Accept, 0));
 					continue;
 				}
-				for (String terminal: f.apply(item)) {
+				for (var terminal: f.apply(item)) {
 					Action action = actionGoToTable.get(i, terminal);
 					if (action != null) {
 						System.out.println("it has a " + Reduce + "-" + action.type() + " confilct in state " + i);
@@ -215,8 +214,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 			boolean goTo = (t & 1) > 0; 
 			boolean access = (t & 2) > 0; 
 			var variables = grammar.getVariables();
-			var terminals = new LinkedHashSet<>(grammar.getTerminals());
-			terminals.add(EndToken);
+			var terminals = grammar.getTerminals();
 			int sSize = 2 + (int) log10(actionGoToTable.size());
 			int vSize = variables.stream().mapToInt(s->s.length()).max().getAsInt();
 			int tSize = terminals.stream().mapToInt(s->s.length()).max().getAsInt();

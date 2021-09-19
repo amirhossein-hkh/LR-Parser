@@ -17,8 +17,7 @@ public class LR1State extends State<LR1State, LR1Item> {
 	}
 
 	private void closure(Grammar grammar) {
-		boolean changed;
-		do {
+		boolean changed; do {
 			changed = false;
 			for (LR1Item item1: items) {
 				if (item1.atEnd() || grammar.isTerminal(item1.getSymbol())) continue;

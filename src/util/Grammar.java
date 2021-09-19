@@ -62,6 +62,7 @@ public class Grammar extends ArrayList<Rule> {
 			}
 		}
 		terminals.removeAll(variables);
+		terminals.add(EndToken);
 		computeFirstSets();
 		computeFollowSets();
 	}
@@ -105,8 +106,7 @@ public class Grammar extends ArrayList<Rule> {
 		};
 		firstSets.put(StartRule, null);
 		for (String variable: variables) firstSets.put(variable, new LinkedHashSet<>());
-		boolean changed;
-		do {
+		boolean changed; do {
 			changed = false;
 			for (String variable: variables) {
 				Set<String> firstSet = new LinkedHashSet<>();
@@ -118,7 +118,6 @@ public class Grammar extends ArrayList<Rule> {
 				firstSets.get(variable).addAll(firstSet);
 				changed = true;
 			}
-			
 		} while (changed);
 		firstSets.put(StartRule, firstSets.get(startVariable));
 	}
@@ -130,8 +129,8 @@ public class Grammar extends ArrayList<Rule> {
 		};
 		fallowSets.put(StartRule, Utility.set(EndToken));
 		for (String variable: variables) fallowSets.put(variable, new LinkedHashSet<>());
-		for (;;) {
-			boolean changed = false;
+		boolean changed; do {
+			changed = false;
 			for (String variable: variables) {
 				for (Rule rule: this) {
 					for (int i=0; i<rule.rhs.length; i+=1) {
@@ -153,8 +152,7 @@ public class Grammar extends ArrayList<Rule> {
 					}
 				}
 			}
-			if (!changed) break;
-		}
+		} while (changed);
 	}
 
 	public Set<String> computeFirst(String[] rhs, int i) {
