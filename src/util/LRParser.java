@@ -123,15 +123,11 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		tokens.add(EndToken);
 		Stack<String> symbols = new Stack<String>() {
 			private static final long serialVersionUID = 1L;
-			public String toString() { // return join("", this); } /*
-				return join("", this);
-			} //*/ 
+			public String toString() { return join("", this); }
 		};
 		Stack<Integer> states = new Stack<>() {
 			private static final long serialVersionUID = 1L;
-			public String toString() { // return stream().map(i-> i.toString()).collect(joining(",")); } /*
-				return join(",", this);
-			} //*/
+			public String toString() { return join(",", this); }
 		};
 		
 		int sSize = max(2, 1 + (int) log10(statesList.size()));
@@ -222,7 +218,6 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 
 			str += " ".repeat(sSize);
 			if (access) for (String terminal: terminals) str += format("%-"+ (max(tSize, sSize)+1) + "s", terminal);
-			//if (access && goTo) str += " ";
 			if (goTo) for (String variable: variables) str += format("%"+ max(vSize, sSize-1) + "s ", variable);
 			str += "\n";
 
@@ -237,7 +232,6 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 					Action action = get(i, terminal);
 					str += format("%-" + max(tSize, sSize) + "s|", action == null ? "" : action);
 				}
-				//if (access && goTo) str += "|";
 				if (goTo) for (String variable: variables) {
 					Integer state = get(i, variable);
 					str += format("%"+ max(vSize, sSize-1) + "s|", state == null ? "" : state);
