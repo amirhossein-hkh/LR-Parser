@@ -69,16 +69,16 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 				var nextState = newState.apply(grammar,
 					itemsi.stream().filter(it-> symbol.equals(it.getSymbol())).map(I::<I>toNextSymbol).collect(toSet())
 				);
-				boolean exist = false;
+				boolean changed = false;
 				for (int j=0; j<statesList.size(); j+=1) {
 					var statej = statesList.get(j);
 					if (!statej.items.equals(nextState.items)) continue;
 					statei.transitions.put(symbol, statej);
-					exist = true;
+					changed = true;
 				}
-				if (exist) continue;
-				statesList.add(nextState);
+				if (changed) continue;
 				statei.transitions.put(symbol, nextState);
+				statesList.add(nextState);
 			}
 		}
 	}
