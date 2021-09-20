@@ -52,7 +52,7 @@ public class LR1State extends State<LR1State, LR1Item> {
 			newLA.addAll(item.lookahead);
 		}
 		else {
-			Set<String> firstSet = grammar.computeFirst(item.getRhs(), item.getDot() + 1);
+			Set<String> firstSet = grammar.computeFirstSet(item.getRhs(), item.getDot() + 1);
 			if (firstSet.contains(Epsilon)) {
 				firstSet.remove(Epsilon);
 				firstSet.addAll(item.lookahead);

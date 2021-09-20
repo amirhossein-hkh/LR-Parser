@@ -111,7 +111,7 @@ public class Grammar extends ArrayList<Rule> {
 				Set<String> firstSet = new LinkedHashSet<>();
 				for (Rule rule: this) {
 					if (!rule.lhs.equals(variable)) continue;
-					firstSet.addAll(computeFirst(rule.rhs, 0));
+					firstSet.addAll(computeFirstSet(rule.rhs, 0));
 				}
 				if (firstSets.get(variable).containsAll(firstSet)) continue;
 				firstSets.get(variable).addAll(firstSet);
@@ -139,7 +139,7 @@ public class Grammar extends ArrayList<Rule> {
 							first = fallowSets.get(rule.lhs);
 						}
 						else {
-							first = computeFirst(rule.rhs, i + 1);
+							first = computeFirstSet(rule.rhs, i + 1);
 							if (first.contains(Epsilon)) {
 								first.remove(Epsilon);
 								first.addAll(fallowSets.get(rule.lhs));
@@ -154,7 +154,7 @@ public class Grammar extends ArrayList<Rule> {
 		} while (changed);
 	}
 
-	public Set<String> computeFirst(String[] rhs, int i) {
+	public Set<String> computeFirstSet(String[] rhs, int i) {
 		Set<String> first = new LinkedHashSet<>();
 		if (i == rhs.length) return first;
 
@@ -170,7 +170,7 @@ public class Grammar extends ArrayList<Rule> {
 		if (first.contains(Epsilon)) {
 			if (i != rhs.length - 1) {
 				first.remove(Epsilon);
-				first.addAll(computeFirst(rhs, i + 1));
+				first.addAll(computeFirstSet(rhs, i + 1));
 			}
 		}
 		return first;
