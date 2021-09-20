@@ -153,7 +153,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 				case Shift:
 					symbols.push(token);
 					states.push(state = action.operand);
-					log.append(format(format2, "Shift", state, token=tokens[index += 1], symbols, states));
+					log.append(format(format2, action.type, state, token=tokens[index += 1], symbols, states));
 					break;
 	
 				case Reduce:
@@ -162,7 +162,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 					String lhs = rule.lhs;
 					symbols.push(lhs);
 					states.push(state = actionGoToTable.get(states.peek(), lhs));
-					log.append(format(format2, "Reduce " + action.operand, state, reduce(rule), symbols, states));
+					log.append(format(format2, action.type + " " + action.operand, state, reduce(rule), symbols, states));
 			}
 			log.append(format(format1, state, token));
 			action = actionGoToTable.get(state, token);
