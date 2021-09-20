@@ -119,9 +119,9 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		return log.toString();
 	}
 
-	public boolean accept(List<String> tokens) {
+	public boolean accept(String line) {
 		log.setLength(0);
-		tokens.add(EndToken);
+		String[] tokens = (line.trim() + " " + EndToken).split("\\s+");
 		Stack<String> symbols = new Stack<String>() {
 			private static final long serialVersionUID = 1L;
 			public String toString() { return join("", this); }
@@ -153,7 +153,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 				case Shift:
 					symbols.push(token);
 					states.push(state = action.operand);
-					log.append(format(format2, "Shift", state, token=tokens.get(index += 1), symbols, states));
+					log.append(format(format2, "Shift", state, token=tokens[index += 1], symbols, states));
 					break;
 	
 				case Reduce:
@@ -167,7 +167,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 			log.append(format(format1, state, token));
 			action = actionGoToTable.get(state, token);
 		}
-		while (index < tokens.size() && action != null);
+		while (index < tokens.length && action != null);
 		log.append("Rejected.");
 		return false;
 	}
