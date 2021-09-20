@@ -24,13 +24,14 @@ import util.LRParser;
 
 public class InputController implements Initializable {
 
+	public static LRParser lrParser;
+	
+	private static String parserValue;
+	private static String inputText; 
+
 	@FXML private Label error;
 	@FXML private TextArea input;
 	@FXML private ComboBox parser;
-
-	private static String parserValue;
-	private static String inputText; 
-	public static LRParser lrParser;
 
 	@FXML
 	private void handleStart(ActionEvent event) throws IOException {
