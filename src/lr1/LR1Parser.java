@@ -39,7 +39,7 @@ public class LR1Parser extends LRParser<LR1State, LR1Item> {
 				statesList.forEach(st1->{ var ts = st1.getTransitions(); ts.forEach((s,st2)->{ if (st2.getItems().equals(itemsj)) ts.put(s,statei); }); });
 				statesList.remove(j);
 			}
-			newStateList.add(statesList.get(i));
+			newStateList.add(statei);
 		}
 		statesList = newStateList;
 	}
