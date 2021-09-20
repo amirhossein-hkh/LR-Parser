@@ -66,7 +66,7 @@ public class Grammar extends ArrayList<Rule> {
 		computeFollowSets();
 	}
 
-	public Set<Rule> getRulesByLhs(String variable) {
+	public Set<Rule> getRules(String variable) {
 		return stream().filter(r-> r.lhs.equals(variable)).collect(toCollection(LinkedHashSet::new));
 	}
 

@@ -20,7 +20,7 @@ public class LR0State extends State<LR0State, LR0Item> {
 			Set<LR0Item> newItems = items.stream()
 				.map(i-> i.getSymbol())
 				.filter(s-> s!=null && grammar.isVariable(s))
-				.flatMap(s-> grammar.getRulesByLhs(s).stream())
+				.flatMap(s-> grammar.getRules(s).stream())
 				.map(LR0Item::new)
 				.collect(toSet())
 			;

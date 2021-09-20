@@ -22,7 +22,7 @@ public class LR1State extends State<LR1State, LR1Item> {
 			for (LR1Item item1: items) {
 				if (item1.atEnd() || grammar.isTerminal(item1.getSymbol())) continue;
 				Set<String> newLA = newLookahead(grammar, item1);
-				for (Rule rule: grammar.getRulesByLhs(item1.getSymbol())) {
+				for (Rule rule: grammar.getRules(item1.getSymbol())) {
 					var newItem = new LR1Item(rule, null);
 					// merge lookaheads with existing item
 					LR1Item item2 = items.stream().filter(it-> it.equalsLR0(newItem)).findFirst().orElse(null);
