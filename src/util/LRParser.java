@@ -15,6 +15,7 @@ import static util.LRParser.ActionType.Shift;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
@@ -187,6 +188,12 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		return stream(r.rhs).mapToInt(String::length).sum() + 2 + r.lhs.length();
 	}
 	
+	public static <T> Set<T> set(T ... objects) {
+		Set<T> set = new LinkedHashSet();
+		for (T o: objects) set.add(o);
+		return set;
+	}
+
 	public class StateList extends ArrayList<S> {
 		private static final long serialVersionUID = 1L;
 		public String toString() {

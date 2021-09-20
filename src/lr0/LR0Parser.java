@@ -1,7 +1,5 @@
 package lr0;
 
-import static util.Utility.set;
-
 import util.Grammar;
 import util.LRParser;
 

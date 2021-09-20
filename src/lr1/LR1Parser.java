@@ -2,7 +2,6 @@ package lr1;
 
 import static java.util.stream.Collectors.toSet;
 import static util.Grammar.EndToken;
-import static util.Utility.set;
 
 import lr0.LR0Item;
 import util.Grammar;

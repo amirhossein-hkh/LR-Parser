@@ -126,7 +126,7 @@ public class Grammar extends ArrayList<Rule> {
 			private static final long serialVersionUID = 1L;
 			public String toString() { return keySet().stream().map(s-> s + ": " + get(s)).collect(joining("\n")); }
 		};
-		fallowSets.put(StartRule, Utility.set(EndToken));
+		fallowSets.put(StartRule, LRParser.set(EndToken));
 		for (String variable: variables) fallowSets.put(variable, new LinkedHashSet<>());
 		boolean changed; do {
 			changed = false;

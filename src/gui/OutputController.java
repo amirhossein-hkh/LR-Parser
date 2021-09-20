@@ -1,10 +1,10 @@
 package gui;
 
 import static gui.InputController.lrParser;
+import static java.util.Arrays.asList;
 import static javafx.fxml.FXMLLoader.load;
 import static javafx.scene.paint.Color.GREEN;
 import static javafx.scene.paint.Color.RED;
-import static util.Utility.list;
 
 import java.io.IOException;
 import java.net.URL;
@@ -82,7 +82,7 @@ public class OutputController implements Initializable {
 		result.setVisible(false);
 		input.textProperty().addListener(
 			(observable, oldValue, newValue)-> {
-				if (lrParser.accept(list(input.getText().trim().split("\\s+")))) {
+				if (lrParser.accept(asList(input.getText().trim().split("\\s+")))) {
 					result.setText("Accepted");
 					result.setTextFill(GREEN);
 					result.setVisible(true);
