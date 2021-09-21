@@ -11,8 +11,31 @@ import util.State;
 
 public class LR1State extends State<LR1State, LR1Item> {
 
+	/*
+	class SetLR1Item extends LinkedHashSet<LR1Item> {
+		private static final long serialVersionUID = 1L;
+		public SetLR1Item(Collection<? extends LR1Item> c) {
+			super(c);
+		}
+		public boolean equalsLR0(Set<LR1Item> itemsj) {
+	        if (this == itemsj) return true;
+	        if (size() != itemsj.size()) return false;
+	        itemsj = new LinkedHashSet(itemsj);
+	        loop: for (LR1Item itemi: this) {
+	        	for (LR1Item item2: itemsj) if (itemi.equalsLR0(item2)) {
+	        		itemsj.remove(item2);
+	        		continue loop;
+	        	}
+	         	return false;
+	    	}
+	        return true;
+		}
+	}
+	//*/
+
 	public LR1State(Grammar grammar, Set<LR1Item> items){
 		this.items = items; //new LinkedHashSet<>(items); // make a copy!
+		//this.items = new SetLR1Item(items); // make a copy!
 		closure(grammar);
 	}
 
