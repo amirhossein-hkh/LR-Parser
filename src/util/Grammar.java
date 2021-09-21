@@ -101,7 +101,7 @@ public class Grammar extends ArrayList<Rule> {
 	private void computeFirstSets() {
 		firstSets = new LinkedHashMap<>() {
 			private static final long serialVersionUID = 1L;
-			public String toString() { return keySet().stream().map(s-> s + ": " + get(s)).collect(joining("\n")); }
+			@Override public String toString() { return keySet().stream().map(s-> s + ": " + get(s)).collect(joining("\n")); }
 		};
 		firstSets.put(StartRule, null);
 		for (String variable: variables) firstSets.put(variable, new LinkedHashSet<>());
@@ -124,7 +124,7 @@ public class Grammar extends ArrayList<Rule> {
 	private void computeFollowSets() {
 		fallowSets = new LinkedHashMap<>() {
 			private static final long serialVersionUID = 1L;
-			public String toString() { return keySet().stream().map(s-> s + ": " + get(s)).collect(joining("\n")); }
+			@Override public String toString() { return keySet().stream().map(s-> s + ": " + get(s)).collect(joining("\n")); }
 		};
 		fallowSets.put(StartRule, LRParser.set(EndToken));
 		for (String variable: variables) fallowSets.put(variable, new LinkedHashSet<>());

@@ -39,8 +39,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 	}
 
 	public record Action(ActionType type, int operand) {
-		@Override
-		public String toString() {
+		@Override public String toString() {
 			return type.sigla + (type == Accept ? "" : operand);
 		}
 	}
@@ -124,11 +123,11 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		String[] tokens = (line.trim() + " " + EndToken).split("\\s+");
 		Stack<String> symbols = new Stack<String>() {
 			private static final long serialVersionUID = 1L;
-			public String toString() { return join("", this); }
+			@Override public String toString() { return join("", this); }
 		};
 		Stack<Integer> states = new Stack<>() {
 			private static final long serialVersionUID = 1L;
-			public String toString() { return join(",", this); }
+			@Override public String toString() { return join(",", this); }
 		};
 		
 		int sSize = max(2, 1 + (int) log10(statesList.size()));
@@ -196,7 +195,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 
 	public class StateList extends ArrayList<S> {
 		private static final long serialVersionUID = 1L;
-		public String toString() {
+		@Override public String toString() {
 			return range(0, size()).mapToObj(i->"State " + i + ": \n" + get(i)).collect(joining("\n\n"));
 		}
 	}
