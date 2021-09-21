@@ -143,7 +143,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		Action action = new Action(Shift, 0);
 		log.append(format(format("%%%ds %%-%ds %%-%ds - %%%ds: %%-%ds | %%-8s | %%s\n\n", sSize, tSize, aSize, sSize, rSize), "st", "tk", "action", "ns", "tk/rl", "symbols", "states"));
 		log.append(" ".repeat(sSize + tSize + 2));
-		do {
+		loop: do {
 			switch (action.type) {
 				case Accept:
 					log.append("Accepted.");
@@ -153,6 +153,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 					symbols.push(token);
 					states.push(state = action.operand);
 					log.append(format(format2, action.type, state, token=tokens[index += 1], symbols, states));
+					if (grammar.isVariable(token)) break loop;
 					break;
 	
 				case Reduce:
