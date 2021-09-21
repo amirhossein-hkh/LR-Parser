@@ -2,7 +2,6 @@ package lr0;
 
 import static java.util.stream.Collectors.toSet;
 
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import util.Grammar;
@@ -11,7 +10,7 @@ import util.State;
 public class LR0State extends State<LR0State, LR0Item> {
 
 	public LR0State(Grammar grammar, Set<LR0Item> items) {
-		this.items = new LinkedHashSet<>(items);
+		this.items = items; // new LinkedHashSet<>(items); // make a copy!
 		closure(grammar);
 	}
 

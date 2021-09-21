@@ -12,7 +12,7 @@ import util.State;
 public class LR1State extends State<LR1State, LR1Item> {
 
 	public LR1State(Grammar grammar, Set<LR1Item> items){
-		this.items = new LinkedHashSet<>(items);
+		this.items = items; //new LinkedHashSet<>(items); // make a copy!
 		closure(grammar);
 	}
 
