@@ -178,6 +178,6 @@ public class Grammar extends ArrayList<Rule> {
 
 	@Override
 	public String toString() {
-		return range(0, size()).mapToObj(i-> i + ") " + get(i)).collect(joining("\n"));
+		return range(0, size()).mapToObj(i-> i + ": " + get(i)).collect(joining("\n"));
 	}
 }
