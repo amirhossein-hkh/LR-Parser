@@ -197,7 +197,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 	public class StateList extends ArrayList<S> {
 		private static final long serialVersionUID = 1L;
 		@Override public String toString() {
-			return range(0, size()).mapToObj(i->"State " + i + ": \n" + get(i)).collect(joining("\n\n"));
+			return range(0, size()).mapToObj(i-> "State " + i + "\n" + get(i)).collect(joining("\n\n"));
 		}
 	}
 	

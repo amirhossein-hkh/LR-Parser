@@ -1,5 +1,7 @@
 package lr1;
 
+import static java.lang.String.join;
+
 import java.util.Objects;
 import java.util.Set;
 
@@ -44,6 +46,6 @@ public class LR1Item extends LR0Item {
 
 	@Override
 	public String toString() {
-		return super.toString() + " , " + lookahead;
+		return super.toString() + ",  {" + join(" ", lookahead) + "}";
 	}
 }
