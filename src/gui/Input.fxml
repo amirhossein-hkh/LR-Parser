@@ -34,7 +34,7 @@
             <TextArea fx:id="input" layoutX="71.0" layoutY="277.0" prefHeight="200.0" prefWidth="533.0" promptText="something like this:  S -&gt; A A      A -&gt; a A | b (each one on a seperate line)" />
             <Label layoutX="102.0" layoutY="139.0" text="-a line can at most 1 variable in the left side" />
             <Button layoutX="71.0" layoutY="500.0" mnemonicParsing="false" onAction="#handleStart" text="Start" />
-            <Label fx:id="error" layoutX="167.0" layoutY="505.0" text="error" textFill="RED" />
+            <Label fx:id="error" layoutX="140.0" layoutY="505.0" text="error" textFill="RED" />
          </children>
       </AnchorPane>
    </children>

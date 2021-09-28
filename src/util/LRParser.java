@@ -84,6 +84,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 	}
 	
 	protected boolean createActionGoToTable(Function<I, Set<String>> f) {
+		log.setLength(0);
 		for (int i=0; i<statesList.size(); i+=1) {
 			var transitions = statesList.get(i).transitions;
 			for (var symbol: (Set<String>) transitions.keySet()) {
@@ -103,14 +104,14 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 				for (var terminal: f.apply(item)) {
 					Action action = actionGoToTable.get(i, terminal);
 					if (action != null) {
-						System.out.println("it has a " + Reduce + "-" + action.type() + " confilct in state " + i);
-						return false;
+						log.append(Reduce + "-" + action.type() + " conflict in state " + i + " at terminal " + terminal + "\n");
+						continue;
 					}
 					actionGoToTable.put(i, terminal, new Action(Reduce, grammar.indexOf(new Rule(item))));
 				}
 			}
 		}
-		return true;
+		return log.isEmpty();
 	}
 	
 	private StringBuilder log = new StringBuilder();
