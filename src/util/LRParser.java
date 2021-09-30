@@ -81,10 +81,8 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		for (int i=0; i<statesList.size(); i+=1) {
 			var transitions = statesList.get(i).transitions;
 			for (var symbol: (Set<String>) transitions.keySet()) {
-				if (grammar.isVariable(symbol))
-					actionGoToTable.put(i, symbol, statesList.indexOf(transitions.get(symbol)));
-				else
-					actionGoToTable.put(i, symbol, new Action(Shift, statesList.indexOf(transitions.get(symbol))));
+				int state = statesList.indexOf(transitions.get(symbol));
+				actionGoToTable.put(i, symbol, grammar.isVariable(symbol) ? state : new Action(Shift, state)); 
 			}
 		}
 		for (int i=0; i<statesList.size(); i+=1) {
