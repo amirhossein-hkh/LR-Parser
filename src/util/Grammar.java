@@ -141,19 +141,19 @@ public class Grammar extends ArrayList<Rule> {
 				for (Rule rule: this) {
 					for (int i=0; i<rule.rhs.length; i+=1) {
 						if (!rule.rhs[i].equals(variable)) continue;
-						Set<String> first;
+						Set<String> firstSet;
 						if (i == rule.rhs.length - 1) {
-							first = fallowSets.get(rule.lhs);
+							firstSet = fallowSets.get(rule.lhs);
 						}
 						else {
-							first = computeFirstSet(rule.rhs, i + 1);
-							if (first.contains(Epsilon)) {
-								first.remove(Epsilon);
-								first.addAll(fallowSets.get(rule.lhs));
+							firstSet = computeFirstSet(rule.rhs, i + 1);
+							if (firstSet.contains(Epsilon)) {
+								firstSet.remove(Epsilon);
+								firstSet.addAll(fallowSets.get(rule.lhs));
 							}
 						}
-						if (fallowSets.get(variable).containsAll(first)) continue;
-						fallowSets.get(variable).addAll(first);
+						if (fallowSets.get(variable).containsAll(firstSet)) continue;
+						fallowSets.get(variable).addAll(firstSet);
 						changed = true;
 					}
 				}
@@ -162,25 +162,25 @@ public class Grammar extends ArrayList<Rule> {
 	}
 
 	public Set<String> computeFirstSet(String[] rhs, int i) {
-		Set<String> first = new LinkedHashSet<>();
-		if (i == rhs.length) return first;
+		Set<String> firstSet = new LinkedHashSet<>();
+		if (i == rhs.length) return firstSet;
 
 		String symbol = rhs[i];
 		if (isTerminal(symbol) || symbol.equals(Epsilon)) {
-			first.add(symbol);
-			return first;
+			firstSet.add(symbol);
+			return firstSet;
 		}
 
 		if (isVariable(symbol)) {
-			for (String terminal: firstSets.get(symbol)) first.add(terminal);
+			for (String terminal: firstSets.get(symbol)) firstSet.add(terminal);
 		}
-		if (first.contains(Epsilon)) {
+		if (firstSet.contains(Epsilon)) {
 			if (i != rhs.length - 1) {
-				first.remove(Epsilon);
-				first.addAll(computeFirstSet(rhs, i + 1));
+				firstSet.remove(Epsilon);
+				firstSet.addAll(computeFirstSet(rhs, i + 1));
 			}
 		}
-		return first;
+		return firstSet;
 	}
 
 	@Override
