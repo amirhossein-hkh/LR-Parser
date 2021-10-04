@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.function.BiFunction;
@@ -195,45 +196,52 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 	
 	public class ActionGoToTable extends LinkedHashMap<String, Object> {
 		private static final long serialVersionUID = 1L;
-		public <T> T put(int state, String token, T t) {
-			return (T) put(state + '\0' + token, t);
+		public <T> T put(int state, String symbol, T t) {
+			return (T) put(state + '\0' + symbol, t);
 		}
-		public <T> T get(int state, String token) {
-			return (T) get(state + '\0' + token);
+		public <T> T get(int state, String symbol) {
+			return (T) get(state + '\0' + symbol);
+		}
+		private int value(int state, String symbol) {
+			return switch (get(state, symbol)) { case null, default-> 0; case Integer i-> i; case Action a-> a.operand; };
 		}
 		@Override
 		public String toString() {
 			return toString(3);
 		}
-		public String toString(int t) {
-			boolean goTo = (t & 1) > 0; 
-			boolean access = (t & 2) > 0; 
+		public String toString(int table) {
+			boolean goTo = (table & 1) > 0; 
+			boolean access = (table & 2) > 0; 
 			var variables = grammar.getVariables();
 			var terminals = grammar.getTerminals();
-			int sSize = 2 + (int) log10(actionGoToTable.size());
-			int vSize = variables.stream().mapToInt(s->s.length()).max().getAsInt();
-			int tSize = terminals.stream().mapToInt(s->s.length()).max().getAsInt();
-			String str = "";
+			int sSize = 1 + (int) log10(statesList.size());			
+			Map<String, Integer> cSize = new LinkedHashMap<>();
+			Set<String> symbols = new LinkedHashSet<>(terminals);
+			symbols.addAll(variables);
+			for (String symbol: symbols) {
+				var max = range(0,statesList.size()).map(i-> value(i,symbol)).max().getAsInt();
+				cSize.put(symbol, max(symbol.length(), (grammar.isTerminal(symbol) ? 2 : 1) + (int) log10(max)));
+			}
 
-			str += " ".repeat(sSize);
-			if (access) for (String terminal: terminals) str += format("%-"+ (max(tSize, sSize)+1) + "s", terminal);
-			if (goTo) for (String variable: variables) str += format("%"+ max(vSize, sSize-1) + "s ", variable);
+			String str = " ".repeat(sSize+1);
+			if (access) for (String terminal: terminals) str += format("%-"+ cSize.get(terminal) + "s ", terminal);
+			if (goTo) for (String variable: variables) str += format("%"+ cSize.get(variable) + "s ", variable);
 			str += "\n";
 
-			String brd = " ".repeat(sSize-1);
-			if (access) brd += "+" + "-".repeat(terminals.size()*(max(tSize, sSize)+1)-1) + "+";
-			if (goTo) brd += (access ? "" : "+") + "-".repeat(variables.size()*max(vSize, sSize)-1) + "+";
+			String brd = " ".repeat(sSize) + "+";
+			if (access) brd += "-".repeat(terminals.stream().mapToInt(t-> cSize.get(t)+1).sum()-1) + "+";
+			if (goTo) brd += "-".repeat(variables.stream().mapToInt(v-> cSize.get(v)+1).sum()-1) + "+";
 			str += brd + "\n";
 
 			for (int i=0; i<statesList.size(); i+=1) {
-				str += format("%" + (sSize-1) + "s|", i);
+				str += format("%" + (sSize) + "s|", i);
 				if (access) for (String terminal: terminals) {
 					Action action = get(i, terminal);
-					str += format("%-" + max(tSize, sSize) + "s|", action == null ? "" : action);
+					str += format("%-" + cSize.get(terminal) + "s|", action == null ? "" : action);
 				}
 				if (goTo) for (String variable: variables) {
 					Integer state = get(i, variable);
-					str += format("%"+ max(vSize, sSize-1) + "s|", state == null ? "" : state);
+					str += format("%"+ cSize.get(variable) + "s|", state == null ? "" : state);
 				}
 				str += "\n";
 			}
