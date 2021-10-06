@@ -28,11 +28,22 @@ import java.util.Set;
 		
 		id + id * ( id + id )
 		
-	CLR(1), LALR(1)	
+	Shift-Reduce conflict
 		S -> a A a
 		S -> b A b
 		A -> a
 		A -> a a
+		
+	Reduce-Reduce conflict
+		S -> a A a
+		S -> a B b
+		S -> a C c
+		S -> b A b
+		S -> b B a
+		S -> b C a
+		A -> a a
+		B -> a a
+		C -> a a
 */
 
 public class Grammar extends ArrayList<Rule> {

@@ -94,12 +94,10 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 					continue;
 				}
 				for (var terminal: f.apply(item)) {
-					Action action = actionGoToTable.get(i, terminal);
-					if (action != null) {
-						log.append(Reduce + "-" + action.type() + " conflict in state " + i + " at terminal " + terminal + "\n");
-						continue;
+					switch (actionGoToTable.get(i, terminal)) {
+						case Action a-> log.append(a.type() + "-" + Reduce  + " conflict in state " + i + " at terminal " + terminal + "\n");
+						case null, default-> actionGoToTable.put(i, terminal, new Action(Reduce, grammar.indexOf(new Rule(item))));
 					}
-					actionGoToTable.put(i, terminal, new Action(Reduce, grammar.indexOf(new Rule(item))));
 				}
 			}
 		}
