@@ -70,7 +70,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 				var nextState = newState.apply(grammar,
 					itemsi.stream().filter(it-> symbol.equals(it.getSymbol())).map(I::<I>toNextSymbol).collect(toSet())
 				);
-				if (statesList.stream().filter(st-> st.items.equals(nextState.items)).map(st-> statei.transitions.put(symbol, st)).count() > 0) continue;
+				if (statesList.stream().filter(st-> st.items.equals(nextState.items)).map(st-> statei.transitions.put(symbol, st)).anyMatch(d->true)) continue;
 				statei.transitions.put(symbol, nextState);
 				statesList.add(nextState);
 			}
