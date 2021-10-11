@@ -144,8 +144,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 					symbols.push(token);
 					states.push(state = action.operand);
 					log.append(format(format2, action.type, state, token=tokens[index += 1], symbols, states));
-					if (grammar.isVariable(token)) break loop;
-					break;
+					if (grammar.isTerminal(token)) break; else break loop;
 	
 				case Reduce:
 					Rule rule = grammar.get(action.operand);
