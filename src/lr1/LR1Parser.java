@@ -33,7 +33,8 @@ public class LR1Parser extends LRParser<LR1State, LR1Item> {
 				var itemsj = statesList.get(j).getItems();
 				if (!equalsLR0(itemsi, itemsj)) continue;
 				itemsi.forEach(iti-> iti.lookahead.addAll(itemsj.stream().filter(itj-> itj.equalsLR0(iti)).findFirst().get().lookahead));
-				statesList.stream().map(LR1State::getTransitions).forEach(ts-> ts.forEach((s,st)->{ if (st.getItems().equals(itemsj)) ts.put(s,statei); }));
+				statesList.stream().map(LR1State::getTransitions).forEach(tr-> tr.forEach((s,st)->{ if (st.getItems().equals(itemsj)) tr.put(s,statei); }));
+				//statesList.stream().map(LR1State::getTransitions).forEach(tr-> tr.keySet().stream().filter(s-> tr.get(s).getItems().equals(itemsj)).forEach(s-> tr.put(s,statei)));
 				statesList.remove(j);
 			}
 			newStateList.add(statei);
