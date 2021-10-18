@@ -6,6 +6,8 @@ import static javafx.scene.paint.Color.GREEN;
 import static javafx.scene.paint.Color.RED;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -81,17 +83,26 @@ public class OutputController implements Initializable {
 		result.setVisible(false);
 		input.textProperty().addListener(
 			(observable, oldValue, newValue)-> {
-				if (lrParser.accept(input.getText())) {
-					result.setText("Accepted");
-					result.setTextFill(GREEN);
-					result.setVisible(true);
+				try {
+					if (lrParser.accept(input.getText())) {
+						result.setText("Accepted");
+						result.setTextFill(GREEN);
+						result.setVisible(true);
+					}
+					else {
+						result.setText("Rejected");
+						result.setTextFill(RED);
+						result.setVisible(true);
+					}
+					output.setText("\n" + lrParser.getLog());
 				}
-				else {
-					result.setText("Rejected");
-					result.setTextFill(RED);
-					result.setVisible(true);
+				catch (Throwable t) {
+					//output.setText("\n" + lrParser.getLog() + "\n" + t);
+					var sw = new StringWriter();
+					t.printStackTrace(new PrintWriter(sw));
+					output.setText("\n" + lrParser.getLog() + "\n" + sw.toString());
+					throw t;
 				}
-				output.setText("\n" + lrParser.getLog());
 			}
 		);
 		output.setText("\n" + lrParser.getGrammar());
