@@ -111,7 +111,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 
 	public boolean accept(String line) {
 		log.setLength(0);
-		String[] tokens = (line.trim() + " " + EndToken).split("\\s+");
+		String[] tokens = (line + " " + EndToken).split("\\s+");
 		Stack<String> symbols = new Stack<String>() {
 			private static final long serialVersionUID = 1L;
 			@Override public String toString() { return join("", this); }
@@ -142,7 +142,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 	
 				case Shift:
 					symbols.push(token);
-					states.push(state = action.operand);
+					state = states.push(action.operand);
 					log.append(format(format2, action.type, state, token=tokens[index += 1], symbols, states));
 					if (grammar.isTerminal(token)) break;
 					log.append(format(format1, state, token));
@@ -151,9 +151,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 				case Reduce:
 					Rule rule = grammar.get(action.operand);
 					for (int i=0; i<rule.rhs.length; i+=1) { symbols.pop(); states.pop(); }
-					String lhs = rule.lhs;
-					symbols.push(lhs);
-					states.push(state = actionGoToTable.get(states.peek(), lhs));
+					state = states.push(actionGoToTable.get(states.peek(), symbols.push(rule.lhs)));
 					log.append(format(format2, action.type + " " + action.operand, state, reduce(rule), symbols, states));
 			}
 			log.append(format(format1, state, token));
