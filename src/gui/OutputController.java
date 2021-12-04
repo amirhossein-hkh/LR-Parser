@@ -39,7 +39,7 @@ public class OutputController implements Initializable {
 
 	@FXML
 	private void handleFollow(ActionEvent event) {
-		output.setText("\n" + lrParser.getGrammar().getFallowSets());
+		output.setText("\n" + lrParser.getGrammar().getFollowSets());
 	}
 
 	@FXML

@@ -16,6 +16,6 @@ public class LR0Parser extends LRParser<LR0State, LR0Item> {
 	
 	public boolean parserSLR1() {
 		createStates(LR0State::new, new LR0State(grammar, set(new LR0Item(grammar.get(0)))));
-		return createActionGoToTable(i-> grammar.getFallowSets().get(i.getLhs()));
+		return createActionGoToTable(i-> grammar.getFollowSets().get(i.getLhs()));
 	}
 }

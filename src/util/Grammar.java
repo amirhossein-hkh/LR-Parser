@@ -53,7 +53,7 @@ public class Grammar extends ArrayList<Rule> {
 	private Set<String> variables;
 	private String startVariable;
 	private Map<String, Set<String>> firstSets;
-	private Map<String, Set<String>> fallowSets;
+	private Map<String, Set<String>> followSets;
 
 	public static final String StartRule = "S'";
 	public static final String EndToken = "$";
@@ -112,8 +112,8 @@ public class Grammar extends ArrayList<Rule> {
 		return firstSets;
 	}
 
-	public Map<String, Set<String>> getFallowSets() {
-		return fallowSets;
+	public Map<String, Set<String>> getFollowSets() {
+		return followSets;
 	}
 
 	private void computeFirstSets() {
@@ -140,12 +140,12 @@ public class Grammar extends ArrayList<Rule> {
 	}
 
 	private void computeFollowSets() {
-		fallowSets = new LinkedHashMap<>() {
+		followSets = new LinkedHashMap<>() {
 			private static final long serialVersionUID = 1L;
 			@Override public String toString() { return keySet().stream().map(s-> s + ": " + join(" ", get(s))).collect(joining("\n")); }
 		};
-		fallowSets.put(StartRule, LRParser.set(EndToken));
-		for (String variable: variables) fallowSets.put(variable, new LinkedHashSet<>());
+		followSets.put(StartRule, LRParser.set(EndToken));
+		for (String variable: variables) followSets.put(variable, new LinkedHashSet<>());
 		boolean changed; do {
 			changed = false;
 			for (String variable: variables) {
@@ -154,17 +154,17 @@ public class Grammar extends ArrayList<Rule> {
 						if (!rule.rhs[i].equals(variable)) continue;
 						Set<String> firstSet;
 						if (i == rule.rhs.length - 1) {
-							firstSet = fallowSets.get(rule.lhs);
+							firstSet = followSets.get(rule.lhs);
 						}
 						else {
 							firstSet = computeFirstSet(rule.rhs, i + 1);
 							if (firstSet.contains(Epsilon)) {
 								firstSet.remove(Epsilon);
-								firstSet.addAll(fallowSets.get(rule.lhs));
+								firstSet.addAll(followSets.get(rule.lhs));
 							}
 						}
-						if (fallowSets.get(variable).containsAll(firstSet)) continue;
-						fallowSets.get(variable).addAll(firstSet);
+						if (followSets.get(variable).containsAll(firstSet)) continue;
+						followSets.get(variable).addAll(firstSet);
 						changed = true;
 					}
 				}
