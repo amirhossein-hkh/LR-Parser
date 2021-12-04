@@ -14,7 +14,6 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -72,9 +71,7 @@ public class OutputController implements Initializable {
 	private void handleBack(ActionEvent event) throws IOException {
 		Button button = (Button) event.getSource();
 		Stage stage = (Stage) button.getScene().getWindow();
-		Parent root = load(getClass().getResource("Input.fxml"));
-		Scene scene = new Scene(root);
-		stage.setScene(scene);
+		stage.setScene(new Scene(load(getClass().getResource("Input.fxml"))));
 	}
 
 

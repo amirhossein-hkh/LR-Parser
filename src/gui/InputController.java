@@ -1,6 +1,7 @@
 package gui;
 
 import static javafx.collections.FXCollections.observableArrayList;
+import static javafx.fxml.FXMLLoader.load;
 import static javafx.scene.layout.AnchorPane.setBottomAnchor;
 import static javafx.scene.layout.AnchorPane.setLeftAnchor;
 import static javafx.scene.layout.AnchorPane.setRightAnchor;
@@ -16,9 +17,7 @@ import java.util.ResourceBundle;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -64,7 +63,7 @@ public class InputController implements Initializable {
 			canBeParse = parserValue.equals("CLR(1)") ? lr1Parser.parseCLR1() : lr1Parser.parseLALR1();
 		}
 		if (!canBeParse) {
-			error.setText("The grammar can not be parsed, click for details. choose a different parser or grammar.");
+			error.setText("The grammar can not be parsed, click for details or choose a different parser or grammar.");
 			error.setOnMouseClicked(e-> alert("\n" + lrParser.getLog() + "\n" + lrParser.getStatesList()));
 			error.setVisible(true);
 			return;
@@ -72,9 +71,14 @@ public class InputController implements Initializable {
 		
 		Button button = (Button) event.getSource();
 		Stage stage = (Stage) button.getScene().getWindow();
-		Parent root = FXMLLoader.load(getClass().getResource("Output.fxml"));
-		Scene scene = new Scene(root);
-		stage.setScene(scene);
+		stage.setScene(new Scene(load(getClass().getResource("Output.fxml"))));
+		
+		/* in alternativa al precedente
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("Output.fxml"));
+		OutputController controller = (OutputController) loader.getController();
+		//controller.setLRParser(lrParser);
+		stage.setScene(new Scene(loader.load()));
+		//*/
 	}
 
 	@Override
