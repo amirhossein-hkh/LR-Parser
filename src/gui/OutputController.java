@@ -73,8 +73,7 @@ public class OutputController implements Initializable {
 		Stage stage = (Stage) button.getScene().getWindow();
 		stage.setScene(new Scene(load(getClass().getResource("Input.fxml"))));
 	}
-
-
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		result.setVisible(false);
