@@ -30,7 +30,7 @@ import lr1.LR1Parser;
 import util.Grammar;
 import util.LRParser;
 
-public class InputController implements Initializable {
+public class GrammarController implements Initializable {
 
 	public static LRParser lrParser;
 	
@@ -71,7 +71,7 @@ public class InputController implements Initializable {
 		
 		Button button = (Button) event.getSource();
 		Stage stage = (Stage) button.getScene().getWindow();
-		stage.setScene(new Scene(load(getClass().getResource("Output.fxml"))));
+		stage.setScene(new Scene(load(getClass().getResource("Parser.fxml"))));
 		
 		/* in alternativa al precedente
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("Output.fxml"));

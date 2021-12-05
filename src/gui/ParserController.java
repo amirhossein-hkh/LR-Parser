@@ -1,6 +1,6 @@
 package gui;
 
-import static gui.InputController.lrParser;
+import static gui.GrammarController.lrParser;
 import static javafx.fxml.FXMLLoader.load;
 import static javafx.scene.paint.Color.GREEN;
 import static javafx.scene.paint.Color.RED;
@@ -21,7 +21,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-public class OutputController implements Initializable {
+public class ParserController implements Initializable {
 
 	@FXML private TextField input;
 	@FXML private TextArea output;
@@ -71,11 +71,11 @@ public class OutputController implements Initializable {
 	private void handleBack(ActionEvent event) throws IOException {
 		Button button = (Button) event.getSource();
 		Stage stage = (Stage) button.getScene().getWindow();
-		stage.setScene(new Scene(load(getClass().getResource("Input.fxml"))));
+		stage.setScene(new Scene(load(getClass().getResource("Grammar.fxml"))));
 	}
-	
+
 	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	public void initialize(URL location, ResourceBundle dt) {
 		result.setVisible(false);
 		input.textProperty().addListener(
 			(observable, oldValue, newValue)-> {

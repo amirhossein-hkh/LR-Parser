@@ -11,7 +11,7 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("LR Parser");
-		primaryStage.setScene(new Scene(load(getClass().getResource("Input.fxml"))));
+		primaryStage.setScene(new Scene(load(getClass().getResource("Grammar.fxml"))));
 		primaryStage.show();
 	}
 

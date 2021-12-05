@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="700.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.OutputController">
+<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="700.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ParserController">
    <top>
       <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="134.0" prefWidth="700.0" style="-fx-border-color: black; -fx-border-width: 0 0 1 0; -fx-background-color: white;" BorderPane.alignment="CENTER">
          <children>
