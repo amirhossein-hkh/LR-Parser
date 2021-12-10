@@ -10,6 +10,7 @@ import static java.util.stream.IntStream.range;
 import static util.Grammar.EndToken;
 import static util.Grammar.StartRule;
 import static util.LRParser.ActionType.Accept;
+import static util.LRParser.ActionType.First;
 import static util.LRParser.ActionType.Reduce;
 import static util.LRParser.ActionType.Shift;
 
@@ -32,7 +33,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 	protected ActionGoToTable actionGoToTable = new ActionGoToTable();
 
 	public enum ActionType {
-		Accept("a"), Shift("s"), Reduce("r");
+		First("f"), Shift("s"), Reduce("r"), Accept("a");
 		String sigla;
 		ActionType(String sigla) {
 			this.sigla = sigla;
@@ -129,9 +130,9 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		String format1 = format("%%%dd %%-%ds ", sSize, tSize);
 		String format2 = format("%%-%ds - %%%dd: %%-%ds | %%-8s | %%s\n", aSize, sSize, rSize);
 
-		String token = "";
-		int index = -1, state = -1;
-		Action action = new Action(Shift, 0);
+		String token = null;
+		int index = -1, state = 0;
+		Action action = new Action(First, state);
 		log.append(format(format("%%%ds %%-%ds %%-%ds - %%%ds: %%-%ds | %%-8s | %%s\n\n", sSize, tSize, aSize, sSize, rSize), "st", "tk", "action", "ns", "tk/rl", "symbols", "states"));
 		log.append(" ".repeat(sSize + tSize + 2));
 		loop: do {
@@ -141,23 +142,26 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 					return true;
 	
 				case Shift:
+					states.push(state);
 					symbols.push(token);
-					state = states.push(action.operand);
-					log.append(format(format2, action.type, state, token=tokens[index += 1], symbols, states));
+				case First:	
+					state = action.operand;
+					token = tokens[index += 1];
+					log.append(format(format2, action.type, state, token, symbols, states));
 					if (grammar.isTerminal(token)) break;
 					log.append(format(format1, state, token));
 					break loop;
 	
 				case Reduce:
 					Rule rule = grammar.get(action.operand);
-					for (int i=0; i<rule.rhs.length; i+=1) { symbols.pop(); states.pop(); }
-					state = states.push(actionGoToTable.get(states.peek(), symbols.push(rule.lhs)));
+					symbols.pop(); for (int i=0; i<rule.rhs.length-1; i+=1) { states.pop(); symbols.pop(); }
+					state = actionGoToTable.get(states.peek(), symbols.push(rule.lhs));
 					log.append(format(format2, action.type + " " + action.operand, state, reduce(rule), symbols, states));
 			}
 			log.append(format(format1, state, token));
 			action = actionGoToTable.get(state, token);
 		}
-		while (index < tokens.length && action != null);
+		while (action != null && index < tokens.length);
 		log.append("Rejected.");
 		return false;
 	}
