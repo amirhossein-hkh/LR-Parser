@@ -113,7 +113,7 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 	public boolean accept(String line) {
 		log.setLength(0);
 		String[] tokens = (line + " " + EndToken).split("\\s+");
-		Stack<String> symbols = new Stack<String>() {
+		Stack<String> symbols = new Stack<>() {
 			private static final long serialVersionUID = 1L;
 			@Override public String toString() { return join("", this); }
 		};
@@ -234,16 +234,14 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 			if (goTo) brd += "-".repeat(variables.stream().mapToInt(v-> cSize.get(v)+1).sum()-1) + "+";
 			str += brd + "\n";
 
+			BiFunction<Integer, String, String> format = (state, symbol)->{
+				var value = get(state, symbol);
+				return  format("%-" + cSize.get(symbol) + "s|", value == null ? "" : value);
+			};
 			for (int i=0; i<statesList.size(); i+=1) {
 				str += format("%" + (sSize) + "s|", i);
-				if (access) for (String terminal: terminals) {
-					Action action = get(i, terminal);
-					str += format("%-" + cSize.get(terminal) + "s|", action == null ? "" : action);
-				}
-				if (goTo) for (String variable: variables) {
-					Integer state = get(i, variable);
-					str += format("%"+ cSize.get(variable) + "s|", state == null ? "" : state);
-				}
+				if (access) for (String terminal: terminals) str += format.apply(i, terminal);
+				if (goTo) for (String variable: variables) str += format.apply(i, variable);
 				str += "\n";
 			}
 
