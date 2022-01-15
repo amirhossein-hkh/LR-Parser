@@ -195,13 +195,15 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		}
 	}
 	
-	public class ActionGoToTable extends LinkedHashMap<String, Object> {
+	private record Key(Integer state, String token) {}
+	
+	public class ActionGoToTable extends LinkedHashMap<Key, Object> {
 		private static final long serialVersionUID = 1L;
 		public <T> T put(int state, String symbol, T t) {
-			return (T) put(state + '\0' + symbol, t);
+			return (T) put(new Key(state, symbol), t);
 		}
 		public <T> T get(int state, String symbol) {
-			return (T) get(state + '\0' + symbol);
+			return (T) get(new Key(state, symbol));
 		}
 		private int value(int state, String symbol) {
 			return switch (get(state, symbol)) { case null, default-> 0; case Integer i-> i; case Action a-> a.operand; };
