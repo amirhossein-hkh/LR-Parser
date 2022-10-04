@@ -34,8 +34,8 @@ public class GrammarController implements Initializable {
 
 	public static LRParser lrParser;
 	
-	private static String parserValue;
-	private static String inputText; 
+	private String parserValue;
+	private String inputText; 
 
 	@FXML private Label error;
 	@FXML private TextArea input;

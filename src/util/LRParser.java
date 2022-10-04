@@ -205,8 +205,9 @@ public abstract class LRParser<S extends State, I extends LR0Item> {
 		public <T> T get(int state, String symbol) {
 			return (T) get(new Key(state, symbol));
 		}
+		@SuppressWarnings("preview")
 		private int value(int state, String symbol) {
-			return switch (get(state, symbol)) { case null, default-> 0; case Integer i-> i; case Action a-> a.operand; };
+			return switch (get(state, symbol)) { case Integer i-> i; case Action a-> a.operand; case null, default-> 0; };
 		}
 		@Override
 		public String toString() {
