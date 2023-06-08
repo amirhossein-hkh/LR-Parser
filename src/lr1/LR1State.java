@@ -1,95 +1,64 @@
 package lr1;
 
+import static util.Grammar.Epsilon;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import util.Grammar;
 import util.Rule;
+import util.State;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Objects;
+public class LR1State extends State<LR1State, LR1Item> {
 
-public class LR1State {
-    private LinkedHashSet<LR1Item> items;
-    private HashMap<String,LR1State> transition;
+	public LR1State(Grammar grammar, Set<LR1Item> items){
+		this.items = items; //new LinkedHashSet<>(items); // make a copy!
+		closure(grammar);
+	}
 
-    public LR1State(Grammar grammar,HashSet<LR1Item> coreItems){
-        items = new LinkedHashSet<>(coreItems);
-        transition = new HashMap<>();
-        closure(grammar);
-    }
+	private void closure(Grammar grammar) {
+		boolean changed; do {
+			changed = false;
+			for (LR1Item item1: items) {
+				if (item1.atEnd() || grammar.isTerminal(item1.getSymbol())) continue;
+				Set<String> newLA = newLookahead(grammar, item1);
+				for (Rule rule: grammar.getRules(item1.getSymbol())) {
+					var newItem = new LR1Item(rule, null);
+					// merge lookaheads with existing item
+					LR1Item item2 = items.stream().filter(it-> it.equalsLR0(newItem)).findFirst().orElse(null);
+					if (item2 != null) {
+						var item2LA = item2.lookahead;
+						if (item2LA.containsAll(newLA)) continue;
+						// changing the lookahead will change the hash code of the item,
+						// which means it must be re-added.
+						items.remove(item2);
+						item2LA.addAll(newLA);
+						items.add(item2);
+						changed = true;
+						continue;
+					}
+					newItem.lookahead = new LinkedHashSet<>(newLA); // make a copy!
+					items.add(newItem);
+					changed = true;
+				}
+				if (changed) break;
+			}
+		} while (changed);
+	}
 
-    private void closure(Grammar grammar) {
-        boolean changeFlag = false;
-        do {
-            changeFlag = false;
-            for(LR1Item item : items){
-                if(item.getDotPointer() != item.getRightSide().length && grammar.isVariable(item.getCurrent())){
-                    HashSet<String> lookahead = new HashSet<>();
-                    if(item.getDotPointer() == item.getRightSide().length - 1){
-                        lookahead.addAll(item.getLookahead());
-                    }else{
-                        HashSet<String> firstSet = grammar.computeFirst(item.getRightSide(),item.getDotPointer()+1);
-                        if(firstSet.contains("epsilon")){
-                            firstSet.remove("epsilon");
-                            firstSet.addAll(item.getLookahead());
-                        }
-                        lookahead.addAll(firstSet);
-                    }
-                    HashSet<Rule> rules = grammar.getRuledByLeftVariable(item.getCurrent());
-                    for(Rule rule : rules){
-                        String[] rhs = rule.getRightSide();
-                        int finished = 0;
-                        if (rhs.length == 1 && rhs[0].equals("epsilon")) {
-                            finished = 1;
-                        }
-                        HashSet<String> newLA = new HashSet<String>(lookahead);
-                        LR1Item newItem = new LR1Item(rule.getLeftSide(),rhs,finished,newLA);
-                        // merge lookaheads with existing item
-                        boolean found = false;
-                        for (LR1Item existingItem : items) {
-                            if (newItem.equalLR0(existingItem)) {
-                                HashSet<String> existLA = existingItem.getLookahead();
-                                if (!existLA.containsAll(newLA)) {
-                                    // changing the lookahead will change the hash code
-                                    // of the item, which means it must be re-added.
-                                    items.remove(existingItem);
-                                    existLA.addAll(newLA);
-                                    items.add(existingItem);
-                                    changeFlag = true;
-                                }
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found) {
-                            items.add(newItem);
-                            changeFlag = true;
-                        }
-                    }
-                    if (changeFlag) {
-                        break;
-                    }
-                }
-            }
-        } while (changeFlag);
-
-    }
-
-    public HashMap<String, LR1State> getTransition() {
-        return transition;
-    }
-
-    public LinkedHashSet<LR1Item> getItems() {
-        return items;
-    }
-
-    @Override
-    public String toString() {
-        String s = "";
-        for(LR1Item item:items){
-            s += item + "\n";
-        }
-        return s;
-    }
-
+	private Set<String> newLookahead(Grammar grammar, LR1Item item) {
+		Set<String> newLA = new LinkedHashSet<>();
+		if (item.lastSymbol()) {
+			newLA.addAll(item.lookahead);
+		}
+		else {
+			Set<String> firstSet = grammar.computeFirstSet(item.getRhs(), item.getDot() + 1);
+			if (firstSet.contains(Epsilon)) {
+				firstSet.remove(Epsilon);
+				firstSet.addAll(item.lookahead);
+			}
+			newLA.addAll(firstSet);
+		}
+		return newLA;
+	}
 }
